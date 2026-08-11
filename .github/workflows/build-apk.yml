@@ -11,52 +11,68 @@ jobs:
       - name: Скачивание репозитория
         uses: actions/checkout@v4
 
-      - name: Установка Node.js 24 (Актуальная версия 2026)
+      - name: Установка Node.js 20 (LTS)
+        # Node 24 может быть слишком экспериментальным для текущих модулей Cordova
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
 
       - name: Установка Cordova
-        run: npm install -g cordova
+        run: npm install -g cordova@latest
 
       - name: Создание проекта Cordova
         run: |
+          rm -rf build_folder || true
+          mkdir build_folder
           cordova create build_folder com.vrv.radar "РАДАР"
           cd build_folder
           cordova platform add android --noscript
 
       - name: Копирование файлов радара и иконки
         run: |
-          # 1. Очищаем дефолтную папку Cordova и закидываем файлы
-          rm -rf build_folder/www/*
-          cp index.html build_folder/www/
-          cp db.js build_folder/www/
+          cd build_folder
           
-          # 2. Переносим папку с картинками
-          if [ -d "images" ]; then cp -r images build_folder/www/; fi
+          # Очищаем дефолтную папку www только если она существует
+          if [ -d "www" ]; then rm -rf www/*; fi
           
-          # 3. Переносим иконку в папку проекта
-          cp icon.png build_folder/www/icon.png
+          cp ../index.html www/
+          cp ../db.js www/
           
-          # 4. Полностью перезаписываем config.xml правильной структурой, чтобы не ломать теги
-          cat <<EOF > build_folder/config.xml
+          # Переносим папку с картинками, если она есть в корне репо
+          if [ -d "../images" ]; then cp -r ../images www/; fi
+          
+          # Переносим иконку
+          if [ -f "../icon.png" ]; then cp ../icon.png www/icon.png; fi
+          
+          # Полностью перезаписываем config.xml правильной структурой
+          cat <<EOF > config.xml
           <?xml version='1.0' encoding='utf-8'?>
-          <widget id="com.vrv.radar" version="1.0.0" xmlns="http://w3.org" xmlns:cdv="http://apache.org">
+          <widget id="com.vrv.radar" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
               <name>РАДАР</name>
               <description>Система мониторинга воздушной обстановки.</description>
               <author email="dev@vrv.radar" href="https://vrv.radar">ВРВ Команда</author>
               <content src="index.html" />
+              
+              <!-- Сетевые доступы -->
               <access origin="*" />
+              <allow-navigation href="https://*/*" />
+              <allow-navigation href="http://*/*" />
               <allow-intent href="http://*/*" />
               <allow-intent href="https://*/*" />
+              
               <preference name="LogLevel" value="DEBUG" />
               <platform name="android">
-                  <icon src="www/icon.png" />
+                  <allow-intent href="market:*" />
+                  <icon density="ldpi" src="www/icon.png" />
+                  <icon density="mdpi" src="www/icon.png" />
+                  <icon density="hdpi" src="www/icon.png" />
+                  <icon density="xhdpi" src="www/icon.png" />
+                  <icon density="xxhdpi" src="www/icon.png" />
+                  <icon density="xxxhdpi" src="www/icon.png" />
               </platform>
-          </widget>
-          EOF
+          </EOF>
 
-      - name: Настройка Java (Обновлено до v5 для Node 24)
+      - name: Настройка Java
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
@@ -65,13 +81,27 @@ jobs:
       - name: Установка Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Финальная компиляция APK
+      - name: Установка необходимых плагинов Cordova
+        working-directory: ./build_folder
         run: |
-          cd build_folder
-          cordova build android --debug
+          cordova plugin add cordova-plugin-whitelist
+          cordova plugin add cordova-plugin-network-information
+
+      - name: Финальная компиляция APK
+        working-directory: ./build_folder
+        run: |
+          export JAVA_HOME=$JAVA_HOME_17_X64
+          cordova telemetry off
+          cordova requirements android
+          cordova build android --debug --gradleArg="--no-daemon"
 
       - name: Сохранение готового файла
         uses: actions/upload-artifact@v4
         with:
           name: VRV_Radar_APK
+          # Обновленный путь для новых версий Cordova
           path: build_folder/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Очистка временных файлов
+        if: always()
+        run: rm -rf build_folder
