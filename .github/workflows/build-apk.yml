@@ -1,7 +1,7 @@
 name: Сборка ВРВ Радар APK
 
 on:
-  workflow_dispatch: # Позволяет запускать сборку вручную одной кнопкой
+  workflow_dispatch: # Ручной запуск кнопкой
 
 jobs:
   build:
@@ -9,12 +9,12 @@ jobs:
 
     steps:
       - name: Скачивание репозитория
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Установка Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Установка Cordova
         run: npm install -g cordova
@@ -32,7 +32,7 @@ jobs:
           cp db.js build_folder/www/
 
       - name: Настройка Java для Android
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -43,11 +43,10 @@ jobs:
       - name: Финальная компиляция APK
         run: |
           cd build_folder
-          cordova build android
+          cordova build android --debug
 
-      - name: Сохранение готового файла (Универсальный поиск)
+      - name: Сохранение готового файла
         uses: actions/upload-artifact@v4
         with:
           name: VRV_Radar_APK
-          # Маска **/*.apk заставит сервер обыскать всю папку и забрать любой готовый APK
-          path: build_folder/**/*.apk
+          path: build_folder/platforms/android/app/build/outputs/apk/debug/app-debug.apk
