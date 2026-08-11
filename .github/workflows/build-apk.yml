@@ -21,16 +21,21 @@ jobs:
 
       - name: Создание проекта Cordova
         run: |
-          cordova create build_folder com.vrv.radar VRV_Radar
+          # В конце строки в кавычках укажите ЛЮБОЕ новое название приложения
+          cordova create build_folder com.vrv.radar "РАДАР"
           cd build_folder
           cordova platform add android --noscript
 
-      - name: Копирование файлов радара
+      - name: Копирование файлов радара и иконки
         run: |
           rm -rf build_folder/www/*
           cp index.html build_folder/www/
           cp db.js build_folder/www/
           cp -r images build_folder/www/
+          
+          # Копируем иконку в корень проекта и прописываем её в конфиг Cordova
+          cp icon.png build_folder/icon.png
+          echo '<platform name="android"><icon src="icon.png" /></platform>' >> build_folder/config.xml
 
       - name: Настройка Java (Обновлено до v5 для Node 24)
         uses: actions/setup-java@v5
