@@ -30,6 +30,7 @@ jobs:
           rm -rf build_folder/www/*
           cp index.html build_folder/www/
           cp db.js build_folder/www/
+          cp -r images build_folder/www/
 
       - name: Настройка Java (Обновлено до v5 для Node 24)
         uses: actions/setup-java@v5
