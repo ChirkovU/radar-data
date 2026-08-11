@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Опасность БПЛА — Мониторинг</title>
+    
+    <!-- Подключаем Leaflet.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html { 
+            width: 100vw; 
+            height: 100vh; 
+            overflow: hidden; 
+            background-color: #0b0d10;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: #e2e8f0;
+        }
+
+        /* Главный контейнер-оболочка под размер телефона */
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            margin: 0 auto;
+            background: #0b0d10;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-io: 1px solid #1a1f26;
+        }
+
+        /* 1. ВЕРХНЯЯ ПАНЕЛЬ (ШАПКА) */
+        .top-bar {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, #0b0d10, rgba(11,13,16,0.8));
+            z-index: 1000;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        .brand-section { display: flex; align-items: center; gap: 12px; }
+        .drone-icon-wrapper {
+            width: 42px;
+            height: 42px;
+            background: rgba(229, 62, 62, 0.15);
+            border: 1px solid #e53e3e;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-text h1 { font-size: 16px; font-weight: bold; color: #fff; margin-bottom: 2px; }
+        .brand-text p { font-size: 12px; color: #718096; }
+        
+        .update-badge { text-align: right; }
+        .badge-status { font-size: 11px; color: #a0aec0; display: flex; align-items: center; gap: 6px; font-weight: bold; }
+        .badge-status::before { content: ''; display: inline-block; width: 6px; height: 6px; background: #e53e3e; border-radius: 50%; }
+        .badge-time { font-size: 12px; color: #718096; margin-top: 2px; }
+
+        /* 2. ПОЛНОЭКРАННАЯ КАРТА */
+        #map { 
+            width: 100%; 
+            height: 100%; 
+            z-index: 1;
+            background: #0b0d10;
+        }
+
+        /* 3. ЛЕГЕНДА КАРТЫ (СЛЕВА ВВЕРХУ) */
+        .map-legend {
+            position: absolute;
+            top: 80px;
+            left: 16px;
+            z-index: 1000;
+            background: rgba(17, 20, 26, 0.85);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #1a1f26;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #cbd5e0; }
+        .legend-circle { width: 10px; height: 10px; border-radius: 50%; }
+        .legend-circle.danger { background: #e53e3e; box-shadow: 0 0 6px #e53e3e; }
+        .legend-circle.safe { background: #4a5568; }
+
+        /* 4. НИЖНИЙ ВИДЖЕТ АКТИВНЫХ УГРОЗ */
+        .threat-widget {
+            position: absolute;
+            bottom: 76px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 92%;
+            background: rgba(17, 20, 26, 0.95);
+            border-radius: 12px;
+            padding: 14px 16px;
+            border: 1px solid #222933;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .widget-left { display: flex; align-items: center; gap: 12px; }
+        .target-icon { font-size: 18px; color: #e53e3e; animation: spin 4s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .widget-title { font-size: 13px; font-weight: bold; color: #fff; }
+        .widget-desc { font-size: 12px; color: #e53e3e; margin-top: 2px; font-weight: bold; }
+        .widget-arrow { color: #4a5568; font-size: 16px; }
+
+        /* 5. НИЖНЕЕ МЕНЮ НАВИГАЦИИ */
+        .bottom-nav {
+            height: 64px;
+            background: #0f1115;
+            border-top: 1px solid #1a1f26;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            flex-shrink: 0;
+        }
+        .nav-item {
+            background: none;
+            border: none;
+            color: #4a5568;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 25%;
+            height: 100%;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+        .nav-icon { font-size: 20px; }
+        .nav-item.active { color: #e53e3e; }
+
+        /* ОТКЛЮЧАЕМ СТАНДАРТНЫЙ ИНТЕРФЕЙС LEAFLET ДЛЯ МИНИМАЛИЗМА */
+        .leaflet-control-attribution { display: none !important; }
+        .leaflet-bar { border: 1px solid #1a1f26 !important; box-shadow: none !important; margin-top: 80px !important; }
+        .leaflet-bar a { background-color: #11141a !important; color: #a0aec0 !important; border-bottom: 1px solid #1a1f26 !important; }
+
+        /* СТИЛИ ПУЛЬСИРУЮЩИХ ТОЧЕК НА КАРТЕ */
+        .radar-pulse-danger { background: #e53e3e; border-radius: 50%; box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.8); animation: mapPulseDanger 1.5s infinite; }
+        @keyframes mapPulseDanger { 0% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.8); } 70% { box-shadow: 0 0 0 16px rgba(229, 62, 62, 0); } 100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0); } }
+        
+        .radar-pulse-success { background: #38a169; border-radius: 50%; box-shadow: 0 0 0 0 rgba(56, 161, 105, 0.8); animation: mapPulseSuccess 1.5s infinite; }
+        @keyframes mapPulseSuccess { 0% { box-shadow: 0 0 0 0 rgba(56, 161, 105, 0.8); } 70% { box-shadow: 0 0 0 16px rgba(56, 161, 105, 0); } 100% { box-shadow: 0 0 0 0 rgba(56, 161, 105, 0); } }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Верхняя плашка -->
+        <div class="top-bar">
+            <div class="brand-section">
+                <div class="drone-icon-wrapper">
+                    <!-- Простая SVG-иконка дрона ярко-красного цвета -->
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e53e3e" stroke-width="2"><path d="M2 22l4-4M22 2l-4 4M21 11V9a2 2 0 0 0-2-2h-4l-3-3-3 3H5a2 2 0 0 0-2 2v2M3 13v2a2 2 0 0 0 2 2h4l3 3 3-3h4a2 2 0 0 0 2-2v-2"/></svg>
+                </div>
+                <div class="brand-text">
+                    <h1>Опасность БПЛА</h1>
+                    <p>Карта угроз по регионам России</p>
+                </div>
+            </div>
+            <div class="update-badge">
+                <div id="badge-status-id" class="badge-status">Обновлено</div>
+                <div id="update-time" class="badge-time">--:--</div>
+            </div>
+        </div>
+
+        <!-- Легенда карты -->
+        <div class="map-legend">
+            <div class="legend-item"><div class="legend-circle danger"></div>Опасность БПЛА</div>
+            <div class="legend-item"><div class="legend-circle safe"></div>Безопасно</div>
+        </div>
+
+        <!-- Карта -->
+        <div id="map"></div>
+
+        <!-- Нижний виджет со списком -->
+        <div class="threat-widget" onclick="alert(document.getElementById('hidden-alert-text').innerText)">
+            <div class="widget-left">
+                <div class="target-icon">🎯</div>
+                <div>
+                    <div class="widget-title">Активные угрозы</div>
+                    <div id="threat-count" class="widget-desc">0 регионов</div>
+                </div>
+            </div>
+            <div class="widget-arrow">›</div>
+        </div>
+        
+        <!-- Скрытый контейнер для хранения полного текста поста (для вывода по тапу) -->
+        <div id="hidden-alert-text" style="display:none;">Нет данных</div>
+
+        <!-- Нижнее меню -->
+        <nav class="bottom-nav">
+            <button class="nav-item active">
+                <div class="nav-icon">🗺️</div><div>Карта</div>
+            </button>
+            <button class="nav-item" onclick="alert('Чат в разработке')">
+                <div class="nav-icon">💬</div><div>Чат</div>
+            </button>
+            <button class="nav-item" onclick="alert('Раздел событий пуст')">
+                <div class="nav-icon">🔔</div><div>События</div>
+            </button>
+            <button class="nav-item" onclick="alert('Версия ядра: v2.6.5\nПроверка сети: Ок')">
+                <div class="nav-icon">⚙️</div><div>Настройки</div>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- Подключаем базу регионов db.js -->
+    <script src="db.js"></script>
+
+    <script>
+        // Ваша прямая ссылка на сырой JSON на GitHub Clouds
+        const DATA_URL = 'https://raw.githubusercontent.com/ChirkovU/radar-data/main/status.json';
+         
+        let map;
+        let activeMarkers = {}; 
+
+        // Инициализация карты в ультра-темных тонах, как на скрине
+        function initMap() {
+            map = L.map('map', { attributionControl: false }).setView(RADAR_DB.config.defaultCoords, RADAR_DB.config.defaultZoom);
+            
+            // Используем специальный темный слой без лишних надписей (как на скриншоте)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        }
+
+        // Поиск ключевого слова региона
+        function detectRegionKey(text) {
+            const lowerText = text.toLowerCase();
+            for (let key in RADAR_DB.regions) {
+                if (lowerText.includes(key)) return key;
+            }
+            return null;
+        }
+
+        // Определение типа угрозы
+        function checkStatusType(text) {
+            const lowerText = text.toLowerCase();
+            if (lowerText.includes('отбой') || lowerText.includes('миновала') || lowerText.includes('прекращено')) return 'SUCCESS'; 
+            if (lowerText.includes('внимание') || lowerText.includes('опасность') || lowerText.includes('ракета') || lowerText.includes('бпла')) return 'DANGER'; 
+            return 'NEUTRAL'; 
+        }
+
+        // --- СИНХРОНИЗАЦИЯ И ФИЛЬТРАЦИЯ ИСТОРИИ ---
+        async function fetchRadarData() {
+            const timeElem = document.getElementById('update-time');
+            const threatCountElem = document.getElementById('threat-count');
+            const hiddenText = document.getElementById('hidden-alert-text');
+            const statusBadge = document.getElementById('badge-status-id');
+            
+            try {
+                const response = await fetch(DATA_URL + "?t=" + new Date().getTime());
+                if (!response.ok) throw new Error();
+                
+                const history = await response.json();
+                const historyArray = Array.isArray(history) ? history : [history];
+                if (historyArray.length === 0) return;
+
+                const latestPost = historyArray[0];
+                hiddenText.innerText = latestPost.text || latestPost.last_post_text || "";
+                
+                let timeString = "--:--";
+                if (latestPost.date || latestPost.updated_at) {
+                    const rawDate = new Date(latestPost.date || latestPost.updated_at);
+                    timeString = rawDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                    timeElem.innerText = timeString;
+                }
+
+                // Стираем старые маркеры перед новым циклом истории
+                for (let key in activeMarkers) { map.removeLayer(activeMarkers[key]); }
+                activeMarkers = {};
+
+                const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+                let dangerRegionsCount = 0;
+
+                // Перебираем лог истории с конца в начало
+                for (let i = historyArray.length - 1; i >= 0; i--) {
+                    const item = historyArray[i];
+                    if (!item) continue;
+                    
+                    const itemText = item.text || item.last_post_text || "";
+                    const itemDateStr = item.date || item.updated_at || "";
+                    const regKey = detectRegionKey(itemText);
+                    
+                    if (!regKey) continue;
+
+                    const statusType = checkStatusType(itemText);
+                    const eventTime = new Date(itemDateStr).getTime();
+                    const regionData = RADAR_DB.regions[regKey];
+                    const sizeObj = L.point(14, 14);
+
+                    if (statusType === 'DANGER') {
+                        const redIcon = L.divIcon({ className: 'radar-pulse-danger', iconSize: sizeObj });
+                        activeMarkers[regKey] = L.marker(regionData.coords, { icon: redIcon }).addTo(map)
+                            .bindPopup("<b>" + regionData.fullName + "</b><br><span style='color:#e53e3e;'>Активная опасность БПЛА!</span>");
+                    } 
+                    else if (statusType === 'SUCCESS') {
+                        if (eventTime > fiveMinutesAgo) {
+                            const greenIcon = L.divIcon({ className: 'radar-pulse-success', iconSize: sizeObj });
+                            activeMarkers[regKey] = L.marker(regionData.coords, { icon: greenIcon }).addTo(map)
+                                .bindPopup("<b>" + regionData.fullName + "</b><br><span style='color:#38a169;'>Опасность миновала (Отбой).</span>");
+                        }
+                    }
+                }
+
+                // Считаем сколько сейчас именно красных активных маркеров угроз на карте
+                for (let key in activeMarkers) {
+                    const popupContent = activeMarkers[key].getPopup().getContent();
+                    if (popupContent.includes('Активная опасность')) {
+                        dangerRegionsCount++;
+                    }
+                }
+
+                // Выводим количество опасных регионов в нижний виджет
+                if (dangerRegionsCount > 0) {
+                    threatCountElem.innerText = dangerRegionsCount + " регионов";
+                    threatCountElem.style.color = "#e53e3e";
+                    statusBadge.style.color = "#e53e3e";
+                } else {
+                    threatCountElem.innerText = "0 регионов";
+                    threatCountElem.style.color = "#a0aec0";
+                    statusBadge.style.color = "#38a169";
+                }
+
+            } catch (e) {
+                console.log("Сбой сети");
+            }
+        }
+
+        initMap();
+        fetchRadarData();
+        
+        // Фоновая проверка каждые 10 сек для очистки старых зеленых точек
+        setInterval(fetchRadarData, 10000);
+    </script>
+
+</body>
+</html>
