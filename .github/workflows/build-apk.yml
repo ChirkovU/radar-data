@@ -1,0 +1,52 @@
+name: Сборка ВРВ Радар APK
+
+on:
+  workflow_dispatch: # Позволяет запускать сборку вручную одной кнопкой
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Скачивание репозитория
+        uses: actions/checkout@v4
+
+      - name: Установка Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Установка Cordova
+        run: npm install -g cordova
+
+      - name: Создание проекта Cordova
+        run: |
+          cordova create build_folder com.vrv.radar VRV_Radar
+          cd build_folder
+          cordova platform add android --noscript
+
+      - name: Копирование файлов радара
+        run: |
+          rm -rf build_folder/www/*
+          cp index.html build_folder/www/
+          cp db.js build_folder/www/
+
+      - name: Настройка Java для Android
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Установка Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Финальная компиляция APK
+        run: |
+          cd build_folder
+          cordova build android --release
+
+      - name: Сохранение готового файла
+        uses: actions/upload-artifact@v4
+        with:
+          name: VRV_Radar_APK
+          path: build_folder/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk
