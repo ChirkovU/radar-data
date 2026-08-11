@@ -12,7 +12,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Установка Node.js 20 (LTS)
-        # Node 24 может быть слишком экспериментальным для текущих модулей Cordova
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -22,8 +21,8 @@ jobs:
 
       - name: Создание проекта Cordova
         run: |
-          rm -rf build_folder || true
-          mkdir build_folder
+          # Полностью зачищаем любые следы папки перед созданием
+          rm -rf build_folder
           cordova create build_folder com.vrv.radar "РАДАР"
           cd build_folder
           cordova platform add android --noscript
@@ -32,7 +31,7 @@ jobs:
         run: |
           cd build_folder
           
-          # Очищаем дефолтную папку www только если она существует
+          # Очищаем дефолтную папку www
           if [ -d "www" ]; then rm -rf www/*; fi
           
           cp ../index.html www/
@@ -53,7 +52,7 @@ jobs:
               <author email="dev@vrv.radar" href="https://vrv.radar">ВРВ Команда</author>
               <content src="index.html" />
               
-              <!-- Сетевые доступы -->
+              <!-- Сетевые доступы (Вшито в ядро Cordova) -->
               <access origin="*" />
               <allow-navigation href="https://*/*" />
               <allow-navigation href="http://*/*" />
@@ -70,10 +69,11 @@ jobs:
                   <icon density="xxhdpi" src="www/icon.png" />
                   <icon density="xxxhdpi" src="www/icon.png" />
               </platform>
-          </EOF>
+          </widget>
+          EOF
 
       - name: Настройка Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -84,7 +84,7 @@ jobs:
       - name: Установка необходимых плагинов Cordova
         working-directory: ./build_folder
         run: |
-          cordova plugin add cordova-plugin-whitelist
+          # Убран cordova-plugin-whitelist, так как он больше не существует и вызывает ошибку 1
           cordova plugin add cordova-plugin-network-information
 
       - name: Финальная компиляция APK
@@ -99,7 +99,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: VRV_Radar_APK
-          # Обновленный путь для новых версий Cordova
           path: build_folder/platforms/android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Очистка временных файлов
