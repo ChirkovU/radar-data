@@ -22,20 +22,37 @@ jobs:
       - name: Prepare Web Directory For Capacitor
         run: |
           mkdir www
-          # Копируем всё содержимое, кроме системных папок гитхаба и самой папки www
           rsync -av --exclude='.github' --exclude='www' ./ www/
 
       - name: Install Dependencies
         run: |
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
+          # Устанавливаем официальную утилиту для автоматической генерации иконок
+          npm install @capacitor/assets --save-dev
 
       - name: Initialize Capacitor Config
         run: |
-          echo '{"appId": "com.radar.app", "appName": "Radar App", "webDir": "www"}' > capacitor.config.json
+          # Установлено имя "RADAR FRF" и новый уникальный ID для исключения конфликтов
+          echo '{"appId": "com.radarfrf.app", "appName": "RADAR FRF", "webDir": "www"}' > capacitor.config.json
 
       - name: Add Android Platform
         run: npx cap add android
+
+      - name: Generate Application Icons
+        run: |
+          # Создаем структуру папок, которую требует генератор
+          mkdir -p assets
+          cp icon.png assets/icon.png
+          # Генерируем иконки во все нативные папки Android проекта
+          npx capacitor-assets generate --android
+
+      - name: Update App Version to 0.8.1
+        run: |
+          # Меняем версию (versionName) и код версии (versionCode) в нативном файле build.gradle
+          cd android/app
+          sed -i 's/versionName "1.0"/versionName "0.8.1"/' build.gradle
+          sed -i 's/versionCode 1/versionCode 81/' build.gradle
 
       - name: Sync Web Code to Android
         run: npx cap sync
@@ -58,5 +75,5 @@ jobs:
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
+          name: RADAR_FRF_v0.8.1
           path: android/app/build/outputs/apk/debug/app-debug.apk
