@@ -32,7 +32,7 @@ jobs:
 
       - name: Initialize Capacitor Config
         run: |
-          echo '{"appId": "com.radarfrf.app", "appName": "RADAR FRF", "webDir": "www"}' > capacitor.config.json
+          echo '{"appId": "com.radartlt", "appName": "RADAR FRF", "webDir": "www"}' > capacitor.config.json
 
       - name: Add Android Platform
         run: npx cap add android
