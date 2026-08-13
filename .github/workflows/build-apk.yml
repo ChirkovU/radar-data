@@ -53,23 +53,24 @@ jobs:
             echo "Icon file not found, skipping icon generation."
           fi
 
-      - name: Update App Version to 0.8.1
+      # ИСПРАВЛЕНО: Теперь мы обновляем не только версию, но и заставляем Gradle собирать с помощью Build Tools 34.0.0
+      - name: Update App Version and Build Tools
         run: |
           cd android/app
           sed -i 's/versionName "1.0"/versionName "0.8.1"/' build.gradle
           sed -i 's/versionCode 1/versionCode 81/' build.gradle
+          sed -i '/android {/a \    buildToolsVersion "34.0.0"' build.gradle
 
       - name: Sync Web Code to Android
         run: npx cap sync
 
-      # ИСПРАВЛЕНО: Обновлено до v5 по требованию GitHub
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '21'
 
-      # ИСПРАВЛЕНО: Явно устанавливаем современные Build Tools, чтобы нашелся zipalign
+      # ИСПРАВЛЕНО: Скачиваем Build Tools версии 34.0.0
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
@@ -81,7 +82,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      # ИСПРАВЛЕНО: Добавлен параметр buildToolsVersion, чтобы экшен подписи знал, где искать zipalign
+      # ИСПРАВЛЕНО: Убран неподдерживаемый параметр buildToolsVersion
       - name: Sign Release APK
         uses: r0adkll/sign-android-release@v1
         id: sign_app
@@ -91,7 +92,6 @@ jobs:
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
-          buildToolsVersion: 34.0.0
 
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
