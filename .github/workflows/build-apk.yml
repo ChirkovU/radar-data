@@ -53,13 +53,11 @@ jobs:
             echo "Icon file not found, skipping icon generation."
           fi
 
-      # ИСПРАВЛЕНО: Теперь мы обновляем не только версию, но и заставляем Gradle собирать с помощью Build Tools 34.0.0
-      - name: Update App Version and Build Tools
+      - name: Update App Version
         run: |
           cd android/app
           sed -i 's/versionName "1.0"/versionName "0.8.1"/' build.gradle
           sed -i 's/versionCode 1/versionCode 81/' build.gradle
-          sed -i '/android {/a \    buildToolsVersion "34.0.0"' build.gradle
 
       - name: Sync Web Code to Android
         run: npx cap sync
@@ -70,7 +68,7 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      # ИСПРАВЛЕНО: Скачиваем Build Tools версии 34.0.0
+      # ИСПРАВЛЕНО: Явно скачиваем инструменты сборки версии 34.0.0
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
@@ -82,7 +80,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      # ИСПРАВЛЕНО: Убран неподдерживаемый параметр buildToolsVersion
+      # ИСПРАВЛЕНО: Передаем BUILD_TOOLS_VERSION через переменные окружения (env) самого шага подписи
       - name: Sign Release APK
         uses: r0adkll/sign-android-release@v1
         id: sign_app
@@ -92,6 +90,8 @@ jobs:
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
