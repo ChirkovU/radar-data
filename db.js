@@ -3,7 +3,7 @@ const RADAR_DB = {
   regions: {
     // ===== Москва / Московская обл =====
     "москва": {
-      fullName: "город Москва",
+      fullName: "город Мосва",
       coords: [55.7558, 37.6173],
       zoomLevel: 8
     },
