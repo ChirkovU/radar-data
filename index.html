@@ -940,7 +940,6 @@
 
           <button class="btn" id="ping-test-btn">Проверить пинг</button>
           <button class="btn" id="about-btn">Подробности</button>
-          <button class="btn primary" id="admin-open-btn">Админ</button>
         </div>
       </div>
     </div>
@@ -952,73 +951,12 @@
         <input id="access-code-input" class="access-input" type="text" placeholder="Введите код" maxlength="32" />
         <div class="access-actions">
           <button class="btn primary" id="access-enter-btn">Войти</button>
-          <button class="btn" id="access-admin-btn">Админ</button>
         </div>
         <div id="access-status" class="access-status">Активный режим: закрыт</div>
       </div>
     </div>
 
-    <div class="modal" id="admin-modal">
-      <div class="modal-overlay" onclick="closeAdminModal()"></div>
-      <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title">Админ-панель</div>
-          <button class="modal-close" onclick="closeAdminModal()">✕</button>
-        </div>
-        <div class="modal-body">
-          <div id="admin-login-block" class="admin-panel">
-            <div class="mini-form">
-              <input id="admin-login-input" type="password" placeholder="Мастер-код" maxlength="32" />
-              <button class="btn primary" id="admin-login-btn">Войти в админку</button>
-            </div>
-          </div>
 
-          <div id="admin-panel-block" style="display:none;" class="admin-panel">
-            <div class="settings-card" style="margin-bottom:0; padding:14px;">
-              <div class="settings-title">Доступ</div>
-              <div class="row">
-                <div class="row-left">
-                  <div class="row-text">
-                    <div class="row-label">Статус приложения</div>
-                    <div class="row-sub" id="access-mode-label">Закрыт</div>
-                  </div>
-                </div>
-                <div class="switch" id="access-toggle" role="switch" aria-checked="false">
-                  <div class="knob"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="settings-card" style="margin-bottom:0; padding:14px;">
-              <div class="settings-title">Генерация кодов</div>
-              <div class="settings-actions">
-                <button class="btn primary" id="generate-codes-btn">Сгенерировать 15 кодов</button>
-                <button class="btn" id="reset-codes-btn">Сбросить коды</button>
-              </div>
-              <div id="code-list" class="code-list"></div>
-            </div>
-
-            <div class="settings-card" style="margin-bottom:0; padding:14px;">
-              <div class="settings-title">Добавить событие</div>
-              <div class="mini-form">
-                <select id="admin-region-select"></select>
-                <input id="admin-event-text" type="text" placeholder="Текст события" />
-                <select id="admin-event-status">
-                  <option value="DANGER">Опасность</option>
-                  <option value="SUCCESS">Отбой</option>
-                </select>
-                <button class="btn primary" id="admin-add-event-btn">Добавить событие</button>
-              </div>
-            </div>
-
-            <div class="settings-card" style="margin-bottom:0; padding:14px;">
-              <div class="settings-title">Список событий</div>
-              <div id="admin-events-list" class="code-list"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Bottom nav -->
     <nav class="bottom-nav">
@@ -1467,12 +1405,6 @@
         alert('Опасность БПЛА\n\nВерсия: v0.6.5\nЗадержка сети: ' + currentPing);
       });
     }
-
-    if (adminBtn) {
-      adminBtn.addEventListener('click', () => {
-        openAdminModal();
-      });
-    }
   }
 
   const MASTER_ADMIN_CODE = 'Etti-1212';
@@ -1480,11 +1412,8 @@
   const APP_ACCESS_MODE_KEY = 'radar_app_access_mode';
   const APP_UNLOCKED_KEY = 'radar_app_unlocked';
   const DEVICE_ID_KEY = 'radar_device_id';
-  const ADMIN_SESSION_KEY = 'radar_admin_session';
-  const ADMIN_TRIES_KEY = 'radar_admin_tries';
-  const MANUAL_EVENTS_KEY = 'radar_manual_events';
-  const APP_STATE_URL = 'status.json';
   const BETA_CODES_URL = 'pw.js';
+  const ACCESS_FILE_URL = 'access.json';
 
   function readRemoteJson(url, fallbackValue) {
     return fetch(url, { cache: 'no-store' })
@@ -1541,12 +1470,12 @@
   }
 
   async function loadRemoteAccessMode() {
-    const state = await readRemoteJson(APP_STATE_URL, { accessMode: 'closed', events: [], feed: [] });
-    if (!state || typeof state !== 'object') {
+    const data = await readRemoteJson(ACCESS_FILE_URL, { accessMode: 'closed' });
+    if (!data || typeof data !== 'object') {
       return 'closed';
     }
 
-    const remoteMode = state.accessMode === 'open' ? 'open' : 'closed';
+    const remoteMode = data.accessMode === 'open' ? 'open' : 'closed';
     try {
       localStorage.setItem(APP_ACCESS_MODE_KEY, remoteMode);
     } catch (e) {}
@@ -1554,15 +1483,13 @@
   }
 
   async function getRemoteAccessState() {
-    const state = await readRemoteJson(APP_STATE_URL, { accessMode: 'closed', events: [], feed: [] });
-    if (state && typeof state === 'object') {
+    const data = await readRemoteJson(ACCESS_FILE_URL, { accessMode: 'closed' });
+    if (data && typeof data === 'object') {
       return {
-        accessMode: state.accessMode === 'open' ? 'open' : 'closed',
-        events: Array.isArray(state.events) ? state.events : [],
-        feed: Array.isArray(state.feed) ? state.feed : []
+        accessMode: data.accessMode === 'open' ? 'open' : 'closed'
       };
     }
-    return { accessMode: 'closed', events: [], feed: [] };
+    return { accessMode: 'closed' };
   }
 
   function setAccessMode(mode) {
@@ -1570,15 +1497,6 @@
     try {
       localStorage.setItem(APP_ACCESS_MODE_KEY, nextMode);
     } catch (e) {}
-
-    getRemoteAccessState().then((state) => {
-      const nextState = {
-        ...state,
-        accessMode: nextMode,
-        updatedAt: new Date().toISOString()
-      };
-      writeRemoteJson(APP_STATE_URL, nextState);
-    });
   }
 
   function getBetaCodes() {
@@ -1651,158 +1569,6 @@
     renderAdminCodes();
   }
 
-  function renderAdminCodes() {
-    const list = document.getElementById('code-list');
-    if (!list) return;
-
-    const codes = getBetaCodes();
-    if (!codes.length) {
-      list.innerHTML = '<div class="code-item"><span>Коды ещё не сгенерированы</span></div>';
-      return;
-    }
-
-    list.innerHTML = '';
-    for (const item of codes) {
-      const row = document.createElement('div');
-      row.className = 'code-item';
-      row.innerHTML = `
-        <span>${item.code}</span>
-        <span class="tag ${item.used ? 'used' : 'active'}">${item.used ? 'Использован' : 'Активен'}</span>
-      `;
-      list.appendChild(row);
-    }
-  }
-
-  function getManualEvents() {
-    try {
-      const localValue = JSON.parse(localStorage.getItem(MANUAL_EVENTS_KEY) || '[]');
-      if (Array.isArray(localValue)) return localValue;
-    } catch (e) {}
-
-    return [];
-  }
-
-  function saveManualEvents(events) {
-    try {
-      localStorage.setItem(MANUAL_EVENTS_KEY, JSON.stringify(events));
-    } catch (e) {}
-
-    getRemoteAccessState().then((state) => {
-      const nextState = {
-        ...state,
-        events: Array.isArray(events) ? events : [],
-        updatedAt: new Date().toISOString()
-      };
-      writeRemoteJson(APP_STATE_URL, nextState);
-    });
-  }
-
-  function renderAdminEvents() {
-    const list = document.getElementById('admin-events-list');
-    if (!list) return;
-
-    const events = getManualEvents();
-    if (!events.length) {
-      list.innerHTML = '<div class="code-item"><span>Нет пользовательских событий</span></div>';
-      return;
-    }
-
-    list.innerHTML = '';
-    for (const event of events) {
-      const row = document.createElement('div');
-      row.className = 'code-item';
-      row.style.alignItems = 'flex-start';
-      row.style.flexDirection = 'column';
-      row.innerHTML = `
-        <div style="display:flex; justify-content:space-between; width:100%; gap:8px;">
-          <strong>${event.regionName || 'Регион'}</strong>
-          <button data-event-id="${event.id}" class="btn" style="padding:6px 8px; margin-top:0; font-size:10px; width:auto;">Удалить</button>
-        </div>
-        <span>${event.text}</span>
-        <span class="tag ${event.status === 'DANGER' ? 'active' : 'used'}">${event.status === 'DANGER' ? 'Опасность' : 'Отбой'}</span>
-      `;
-
-      const deleteBtn = row.querySelector('button');
-      deleteBtn.addEventListener('click', () => {
-        removeManualEvent(event.id);
-      });
-
-      list.appendChild(row);
-    }
-  }
-
-  function removeManualEvent(id) {
-    const updated = getManualEvents().filter(item => String(item.id) !== String(id));
-    saveManualEvents(updated);
-    refreshThreatsHistoryFromManual();
-    renderAdminEvents();
-    renderEventsSummary();
-  }
-
-  function refreshThreatsHistoryFromManual() {
-    const manual = getManualEvents();
-    const filtered = threatsHistory.filter(item => !item.isManual);
-    threatsHistory = [...filtered, ...manual.map(item => ({
-      ...item,
-      regionKey: item.regionKey || item.regionName,
-     Status: item.status,
-      isManual: true
-    }))];
-  }
-
-  function addManualEvent(regionKey, regionName, text, status) {
-    const events = getManualEvents();
-    const next = {
-      id: Date.now() + Math.random().toString(36).slice(2, 8),
-      regionKey,
-      regionName,
-      text,
-      status,
-      timestamp: Date.now(),
-      isManual: true
-    };
-    events.unshift(next);
-    saveManualEvents(events);
-    refreshThreatsHistoryFromManual();
-    renderAdminEvents();
-    renderEventsSummary();
-    return next;
-  }
-
-  function isAccessOpen() {
-    return getAccessMode() === 'open' || localStorage.getItem(APP_UNLOCKED_KEY) === '1';
-  }
-
-  function setAccessUnlocked(value) {
-    try {
-      localStorage.setItem(APP_UNLOCKED_KEY, value ? '1' : '0');
-    } catch (e) {}
-  }
-
-  function setAdminSession(value) {
-    try {
-      localStorage.setItem(ADMIN_SESSION_KEY, value ? '1' : '0');
-    } catch (e) {}
-  }
-
-  function hasAdminSession() {
-    return localStorage.getItem(ADMIN_SESSION_KEY) === '1';
-  }
-
-  function getAdminTryCount() {
-    try {
-      return Number(localStorage.getItem(ADMIN_TRIES_KEY) || '0');
-    } catch (e) {
-      return 0;
-    }
-  }
-
-  function setAdminTryCount(value) {
-    try {
-      localStorage.setItem(ADMIN_TRIES_KEY, String(value));
-    } catch (e) {}
-  }
-
   function isCodeValid(code) {
     const normalized = normalizeCode(code);
     if (!normalized) return false;
@@ -1829,7 +1595,6 @@
     candidate.usedByDevice = deviceId;
     candidate.usedAt = Date.now();
     saveBetaCodes(codes);
-    renderAdminCodes();
     return { valid: true, admin: false, reason: 'Beta access granted' };
   }
 
@@ -1851,15 +1616,10 @@
       return false;
     }
 
-    if (result.admin) {
-      setAdminSession(true);
-      openAdminModal();
-    }
-
     applyAccessGrant();
     const status = document.getElementById('access-status');
     if (status) {
-      status.textContent = result.admin ? 'Админ-доступ активирован' : 'Доступ по beta-коду активирован';
+      status.textContent = 'Доступ по beta-коду активирован';
       status.classList.add('success');
       status.classList.remove('error');
     }
@@ -1882,93 +1642,7 @@
     return true;
   }
 
-  function openAdminModal() {
-    const modal = document.getElementById('admin-modal');
-    const loginBlock = document.getElementById('admin-login-block');
-    const panelBlock = document.getElementById('admin-panel-block');
-    if (!modal) return;
-
-    if (hasAdminSession()) {
-      loginBlock.style.display = 'none';
-      panelBlock.style.display = 'block';
-    } else {
-      loginBlock.style.display = 'block';
-      panelBlock.style.display = 'none';
-    }
-
-    modal.classList.add('active');
-    renderAdminCodes();
-    renderAdminEvents();
-    renderAdminAccessToggle();
-    populateAdminRegionSelect();
-  }
-
-  function closeAdminModal() {
-    const modal = document.getElementById('admin-modal');
-    if (modal) modal.classList.remove('active');
-  }
-
-  function renderAdminAccessToggle() {
-    const toggle = document.getElementById('access-toggle');
-    const label = document.getElementById('access-mode-label');
-    if (!toggle || !label) return;
-
-    const isOpen = getAccessMode() === 'open';
-    toggle.classList.toggle('on', isOpen);
-    toggle.setAttribute('aria-checked', isOpen ? 'true' : 'false');
-    label.textContent = isOpen ? 'Открыт' : 'Закрыт';
-  }
-
-  function populateAdminRegionSelect() {
-    const select = document.getElementById('admin-region-select');
-    if (!select) return;
-
-    if (!window.RADAR_DB || !RADAR_DB.regions) return;
-
-    const keys = Object.keys(RADAR_DB.regions).sort();
-    select.innerHTML = '';
-    for (const key of keys) {
-      const option = document.createElement('option');
-      option.value = key;
-      option.textContent = RADAR_DB.regions[key].fullName;
-      select.appendChild(option);
-    }
-  }
-
-  function adminTryLogin() {
-    const input = document.getElementById('admin-login-input');
-    const code = input ? input.value : '';
-    if (normalizeCode(code) === normalizeCode(MASTER_ADMIN_CODE)) {
-      setAdminSession(true);
-      openAdminModal();
-      setAdminTryCount(0);
-      return;
-    }
-
-    const tries = getAdminTryCount() + 1;
-    setAdminTryCount(tries);
-    if (tries >= 5) {
-      alert('Слишком много попыток. Подождите 5 минут.');
-      return;
-    }
-
-    alert('Неверный мастер-код');
-  }
-
-  function adminLogout() {
-    setAdminSession(false);
-    closeAdminModal();
-    setAccessUnlocked(false);
-    const lock = document.getElementById('access-lock');
-    if (lock) lock.classList.add('active');
-  }
-
-  function initAdminControls() {
-    const loginBtn = document.getElementById('admin-login-btn');
-    if (loginBtn) {
-      loginBtn.addEventListener('click', adminTryLogin);
-    }
-
+  function initAccessControls() {
     const accessBtn = document.getElementById('access-enter-btn');
     if (accessBtn) {
       accessBtn.addEventListener('click', () => {
@@ -1976,77 +1650,6 @@
         if (input) unlockAppWithCode(input.value);
       });
     }
-
-    const adminAccessBtn = document.getElementById('access-admin-btn');
-    if (adminAccessBtn) {
-      adminAccessBtn.addEventListener('click', () => {
-        openAdminModal();
-      });
-    }
-
-    const generateBtn = document.getElementById('generate-codes-btn');
-    if (generateBtn) {
-      generateBtn.addEventListener('click', () => {
-        generateBetaCodes();
-        alert('Сгенерировано 15 beta-кодов');
-      });
-    }
-
-    const resetBtn = document.getElementById('reset-codes-btn');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        resetBetaCodes();
-        alert('Коды сброшены');
-      });
-    }
-
-    const accessToggle = document.getElementById('access-toggle');
-    if (accessToggle) {
-      accessToggle.addEventListener('click', () => {
-        const next = getAccessMode() === 'open' ? 'closed' : 'open';
-        setAccessMode(next);
-        renderAdminAccessToggle();
-        if (next === 'closed') {
-          setAccessUnlocked(false);
-          const lock = document.getElementById('access-lock');
-          if (lock) lock.classList.add('active');
-        } else {
-          setAccessUnlocked(true);
-          const lock = document.getElementById('access-lock');
-          if (lock) lock.classList.remove('active');
-        }
-      });
-    }
-
-    const addEventBtn = document.getElementById('admin-add-event-btn');
-    if (addEventBtn) {
-      addEventBtn.addEventListener('click', () => {
-        const regionSelect = document.getElementById('admin-region-select');
-        const textInput = document.getElementById('admin-event-text');
-        const statusSelect = document.getElementById('admin-event-status');
-        const key = regionSelect ? regionSelect.value : '';
-        const text = textInput ? textInput.value.trim() : '';
-        const status = statusSelect ? statusSelect.value : 'DANGER';
-
-        if (!key || !text) {
-          alert('Заполните регион и текст события');
-          return;
-        }
-
-        const regionName = window.RADAR_DB && RADAR_DB.regions[key] ? RADAR_DB.regions[key].fullName : key;
-        addManualEvent(key, regionName, text, status);
-        alert('Событие добавлено');
-        if (textInput) textInput.value = '';
-      });
-    }
-
-    const openAdminBtn = document.getElementById('admin-open-btn');
-    if (openAdminBtn) {
-      openAdminBtn.addEventListener('click', () => openAdminModal());
-    }
-
-    window.closeAdminModal = closeAdminModal;
-    window.openAdminModal = openAdminModal;
   }
 
   async function ensureInitialAccessState() {
@@ -2059,7 +1662,6 @@
     } else {
       setAccessUnlocked(false);
     }
-    renderAdminAccessToggle();
     checkAccessGate();
   }
 
@@ -2704,11 +2306,8 @@
         updateNotifSwitchUi();
         refreshSelectedRegionUi();
         bindSettingsEvents();
-        initAdminControls();
+        initAccessControls();
         ensureInitialAccessState();
-        renderAdminCodes();
-        renderAdminAccessToggle();
-        populateAdminRegionSelect();
         checkAccessGate();
         renderEventsSummary();
         testPing();
