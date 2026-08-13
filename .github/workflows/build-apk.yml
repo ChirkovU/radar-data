@@ -62,23 +62,26 @@ jobs:
       - name: Sync Web Code to Android
         run: npx cap sync
 
+      # ИСПРАВЛЕНО: Обновлено до v5 по требованию GitHub
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '21'
 
+      # ИСПРАВЛЕНО: Явно устанавливаем современные Build Tools, чтобы нашелся zipalign
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'build-tools;34.0.0'
 
-      # Изменено: Собираем релизную версию вместо дебага
       - name: Build Release APK with Gradle
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      # НОВЫЙ ШАГ: Подпись APK (без этого релизный APK не установится)
+      # ИСПРАВЛЕНО: Добавлен параметр buildToolsVersion, чтобы экшен подписи знал, где искать zipalign
       - name: Sign Release APK
         uses: r0adkll/sign-android-release@v1
         id: sign_app
@@ -88,8 +91,8 @@ jobs:
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
+          buildToolsVersion: 34.0.0
 
-      # Изменено: Загружаем подписанный релизный APK
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
