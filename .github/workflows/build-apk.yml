@@ -1,106 +1,55 @@
-name: Сборка ВРВ Радар APK
+name: Build Android APK
 
 on:
-  workflow_dispatch: # Ручной запуск кнопкой
+  push:
+    branches:
+      - main # Сборка будет запускаться при каждом пуше в ветку main (или master)
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Скачивание репозитория
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Установка Node.js 20 (LTS)
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-node-version: 20
 
-      - name: Установка Cordova
-        run: npm install -g cordova@latest
-
-      - name: Создание проекта Cordova
+      - name: Install Dependencies
         run: |
-          # Полностью зачищаем любые следы папки перед созданием
-          rm -rf build_folder
-          cordova create build_folder com.vrv.radar "РАДАР"
-          cd build_folder
-          cordova platform add android --noscript
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
 
-      - name: Копирование файлов радара и иконки
+      - name: Initialize Capacitor Config
         run: |
-          cd build_folder
-          
-          # Очищаем дефолтную папку www
-          if [ -d "www" ]; then rm -rf www/*; fi
-          
-          cp ../index.html www/
-          cp ../db.js www/
-          
-          # Переносим папку с картинками, если она есть в корне репо
-          if [ -d "../images" ]; then cp -r ../images www/; fi
-          
-          # Переносим иконку
-          if [ -f "../icon.png" ]; then cp ../icon.png www/icon.png; fi
-          
-          # Полностью перезаписываем config.xml правильной структурой
-          cat <<EOF > config.xml
-          <?xml version='1.0' encoding='utf-8'?>
-          <widget id="com.vrv.radar" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-              <name>РАДАР</name>
-              <description>Система мониторинга воздушной обстановки.</description>
-              <author email="dev@vrv.radar" href="https://vrv.radar">ВРВ Команда</author>
-              <content src="index.html" />
-              
-              <!-- Сетевые доступы (Вшито в ядро Cordova) -->
-              <access origin="*" />
-              <allow-navigation href="https://*/*" />
-              <allow-navigation href="http://*/*" />
-              <allow-intent href="http://*/*" />
-              <allow-intent href="https://*/*" />
-              
-              <preference name="LogLevel" value="DEBUG" />
-              <platform name="android">
-                  <allow-intent href="market:*" />
-                  <icon density="ldpi" src="www/icon.png" />
-                  <icon density="mdpi" src="www/icon.png" />
-                  <icon density="hdpi" src="www/icon.png" />
-                  <icon density="xhdpi" src="www/icon.png" />
-                  <icon density="xxhdpi" src="www/icon.png" />
-                  <icon density="xxxhdpi" src="www/icon.png" />
-              </platform>
-          </widget>
-          EOF
+          echo '{"appId": "com.radar.app", "appName": "Radar App", "webDir": "."}' > capacitor.config.json
 
-      - name: Настройка Java
+      - name: Add Android Platform
+        run: npx cap add android
+
+      - name: Sync Web Code to Android
+        run: npx cap sync
+
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Установка Android SDK
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Установка необходимых плагинов Cordova
-        working-directory: ./build_folder
+      - name: Build APK with Gradle
         run: |
-          # Убран cordova-plugin-whitelist, так как он больше не существует и вызывает ошибку 1
-          cordova plugin add cordova-plugin-network-information
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
-      - name: Финальная компиляция APK
-        working-directory: ./build_folder
-        run: |
-          export JAVA_HOME=$JAVA_HOME_17_X64
-          cordova telemetry off
-          cordova requirements android
-          cordova build android --debug --gradleArg="--no-daemon"
-
-      - name: Сохранение готового файла
+      - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
-          name: VRV_Radar_APK
-          path: build_folder/platforms/android/app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Очистка временных файлов
-        if: always()
-        run: rm -rf build_folder
+          name: app-debug-apk
+          path: android/app/build/outputs/apk/debug/radar.apk
