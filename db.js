@@ -864,3 +864,7 @@ const RADAR_DB = {
     updateInterval: 10000 // 30 секунд
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.RADAR_DB = RADAR_DB;
+}

@@ -30,7 +30,7 @@
       display: flex;
       flex-direction: column;
       position: relative;
-      border-io: 1px solid #1a1f26;
+      border: 1px solid #1a1f26;
     }
 
     .top-bar {
@@ -258,6 +258,458 @@
     }
     .meta .k { font-size: 11px; color:#718096; font-weight: 800; }
     .meta .v { font-size: 12px; color:#e2e8f0; font-weight: 900; margin-top: 3px; }
+
+    .access-lock {
+      position: fixed;
+      inset: 0;
+      z-index: 3500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(3,5,8,0.94);
+      padding: 16px;
+    }
+
+    .access-lock.active {
+      display: flex;
+    }
+
+    .access-card {
+      width: min(420px, 100%);
+      background: rgba(17, 20, 26, 0.98);
+      border: 1px solid #222933;
+      border-radius: 16px;
+      padding: 22px 18px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .access-card h3 {
+      font-size: 22px;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .access-card p {
+      font-size: 12px;
+      color: #a0aec0;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .access-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #1a1f26;
+      background: #0f1115;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .access-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .access-actions .btn {
+      margin-top: 0;
+    }
+
+    .access-status {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #a0aec0;
+      min-height: 18px;
+    }
+
+    .access-status.error { color: #fca5a5; }
+    .access-status.success { color: #86efac; }
+
+    .admin-panel { display: flex; flex-direction: column; gap: 12px; }
+    .mini-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mini-form input,
+    .mini-form select,
+    #admin-region-select,
+    #admin-event-status {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #1a1f26;
+      background: #0f1115;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .code-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .code-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid #1a1f26;
+      background: rgba(15,17,21,0.6);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #e2e8f0;
+    }
+
+    .tag {
+      font-size: 10px;
+      padding: 4px 6px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+
+    .tag.active { background: rgba(56,161,105,0.15); color: #86efac; }
+    .tag.used { background: rgba(148,163,184,0.12); color: #cbd5e0; }
+
+    .settings-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .settings-actions .btn {
+      margin-top: 0;
+      flex: 1 1 140px;
+    }
+
+    /* Threats Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-content {
+      position: relative;
+      z-index: 2001;
+      background: rgba(17, 20, 26, 0.98);
+      border: 1px solid #222933;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 450px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 20px 20px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #222933;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #718096;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(229, 62, 62, 0.1);
+      color: #e53e3e;
+    }
+
+    .modal-body {
+      overflow-y: auto;
+      padding: 12px;
+      flex: 1;
+    }
+
+    .threats-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .threat-item {
+      background: rgba(34, 41, 51, 0.6);
+      border: 1px solid #222933;
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: all 0.2s;
+    }
+
+    .threat-item:hover {
+      background: rgba(34, 41, 51, 0.9);
+      border-color: rgba(229, 62, 62, 0.4);
+    }
+
+    .threat-item.danger {
+      border-left: 4px solid #e53e3e;
+    }
+
+    .threat-item.success {
+      border-left: 4px solid #38a169;
+    }
+
+    .threat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .threat-region {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      flex: 1;
+    }
+
+    .threat-time {
+      font-size: 11px;
+      color: #718096;
+      text-align: right;
+      margin-left: 12px;
+    }
+
+    .threat-text {
+      font-size: 12px;
+      color: #cbd5e0;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .threat-status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .threat-status-badge.danger {
+      background: rgba(229, 62, 62, 0.2);
+      color: #e53e3e;
+    }
+
+    .threat-status-badge.success {
+      background: rgba(56, 161, 105, 0.2);
+      color: #38a169;
+    }
+
+    .threats-empty {
+      text-align: center;
+      color: #718096;
+      padding: 32px 16px;
+      font-size: 14px;
+    }
+
+    .event-stat {
+      margin-top: 8px;
+    }
+
+    .event-stat .meta {
+      min-height: 76px;
+    }
+
+    .event-summary-row {
+      margin-top: 10px;
+    }
+
+    .event-analytics {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(34, 41, 51, 1);
+    }
+
+    .analytics-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #a0aec0;
+      font-weight: 700;
+    }
+
+    .event-chart {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 6px;
+      align-items: end;
+      height: 110px;
+      padding: 10px 8px 16px;
+      border: 1px solid rgba(34, 41, 51, 1);
+      background: linear-gradient(to top, rgba(15, 17, 21, 0.8), rgba(17, 20, 26, 0.5));
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .event-bar-wrap {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+    }
+
+    .event-bar {
+      width: 100%;
+      max-width: 20px;
+      border-radius: 8px 8px 0 0;
+      background: linear-gradient(to top, #e53e3e, #f97316);
+      box-shadow: 0 0 10px rgba(229, 62, 62, 0.35);
+      min-height: 8px;
+      transition: height 0.25s ease;
+      position: relative;
+    }
+
+    .event-bar.empty {
+      background: linear-gradient(to top, rgba(74, 85, 104, 0.7), rgba(74, 85, 104, 0.25));
+      box-shadow: none;
+    }
+
+    .event-bar-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      color: #718096;
+      white-space: nowrap;
+    }
+
+    .trend-legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 11px;
+      color: #a0aec0;
+    }
+
+    .trend-legend .mini-swatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mini-swatch .dot {
+      width: 8px;
+      height: 8px;
+      display: block;
+      border-radius: 50%;
+      background: #e53e3e;
+    }
+
+    .mini-swatch .dot.neutral {
+      background: rgba(74, 85, 104, 0.8);
+    }
+
+    .region-analytics {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(34, 41, 51, 1);
+    }
+
+    .region-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .region-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .region-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #cbd5e0;
+    }
+
+    .region-meter {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(74, 85, 104, 0.2);
+      overflow: hidden;
+      border: 1px solid rgba(34, 41, 51, 1);
+    }
+
+    .region-meter-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(to right, #e53e3e, #f59e0b 70%, #f6d365);
+      box-shadow: 0 0 10px rgba(229, 62, 62, 0.3);
+    }
   </style>
 </head>
 
@@ -292,7 +744,7 @@
 
       <div id="map"></div>
 
-      <div class="threat-widget" onclick="alert(document.getElementById('hidden-alert-text').innerText)">
+      <div class="threat-widget" onclick="openThreatsModal()">
         <div class="widget-left">
           <div class="target-icon" id="target-icon">
             <span id="target-emoji">🎯</span>
@@ -307,6 +759,109 @@
       </div>
 
       <div id="hidden-alert-text" style="display:none;">Нет данных</div>
+    </div>
+
+    <!-- THREATS MODAL -->
+    <div class="modal" id="threats-modal">
+      <div class="modal-overlay" onclick="closeThreatsModal()"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Угрозы за 24 часа</div>
+          <button class="modal-close" onclick="closeThreatsModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div id="threats-list-container" class="threats-list">
+            <!-- Угрозы будут загружены сюда -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="screen" id="screen-events">
+      <div class="top-bar">
+        <div class="brand-section">
+          <div class="drone-icon-wrapper">
+            <span id="events-logo-fallback" style="font-size:18px; color:#e53e3e;">📊</span>
+            <img id="events-logo-png" alt="logo" style="width:39px;height:39px;display:none;" />
+          </div>
+          <div class="brand-text">
+            <h1>События</h1>
+            <p>Аналитика по угрозам</p>
+          </div>
+        </div>
+        <div class="update-badge">
+          <div class="badge-status" style="color:#a0aec0;">Наблюдение</div>
+          <div class="badge-time" id="events-last-updated">—</div>
+        </div>
+      </div>
+
+      <div class="settings-wrap">
+        <div class="settings-card">
+          <div class="settings-title">События сегодня</div>
+          <div class="settings-hint">Краткая сводка по активности в реальном времени.</div>
+
+          <div class="two-col event-stat">
+            <div class="meta">
+              <div class="k">Сегодня</div>
+              <div class="v" id="events-today-count">0 событий</div>
+            </div>
+            <div class="meta">
+              <div class="k">В этом часу</div>
+              <div class="v" id="events-hour-count">0 событий</div>
+            </div>
+          </div>
+
+          <div class="row event-summary-row">
+            <div class="row-left">
+              <div class="row-text">
+                <div class="row-label">Самый активный регион</div>
+                <div class="row-sub" id="events-top-region">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="row-left">
+              <div class="row-text">
+                <div class="row-label">Источник</div>
+                <div class="row-sub">
+                  <a id="events-source" href="https://t.me/radar_fullrussia" target="_blank" rel="noreferrer" style="color:#e53e3e; text-decoration:none; font-weight:700;">@radar_fullrussia</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="row-left">
+              <div class="row-text">
+                <div class="row-label">Аномалии по времени</div>
+                <div class="row-sub" id="events-anomaly">Нет данных</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="event-analytics">
+            <div class="analytics-header">
+              <span>Активность за 12 часов</span>
+              <span id="events-chart-label">пик —</span>
+            </div>
+            <div id="events-chart" class="event-chart" aria-label="График активности"></div>
+            <div class="trend-legend">
+              <span class="mini-swatch"><span class="dot"></span> события</span>
+              <span class="mini-swatch"><span class="dot neutral"></span> тишина</span>
+            </div>
+          </div>
+
+          <div class="region-analytics">
+            <div class="analytics-header">
+              <span>Статистика регионов</span>
+              <span id="events-region-label">за сутки</span>
+            </div>
+            <div id="events-region-list" class="region-list"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- SETTINGS -->
@@ -379,11 +934,88 @@
             </div>
             <div class="meta">
               <div class="k">Проверка сети</div>
-              <div class="v" id="net-status">Стабильно</div>
+              <div class="v" id="net-status">—</div>
             </div>
           </div>
 
+          <button class="btn" id="ping-test-btn">Проверить пинг</button>
           <button class="btn" id="about-btn">Подробности</button>
+          <button class="btn primary" id="admin-open-btn">Админ</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="access-lock" id="access-lock">
+      <div class="access-card">
+        <h3>Доступ закрыт</h3>
+        <p>Введите мастер-код администратора или активный beta-код для получения доступа.</p>
+        <input id="access-code-input" class="access-input" type="text" placeholder="Введите код" maxlength="32" />
+        <div class="access-actions">
+          <button class="btn primary" id="access-enter-btn">Войти</button>
+          <button class="btn" id="access-admin-btn">Админ</button>
+        </div>
+        <div id="access-status" class="access-status">Активный режим: закрыт</div>
+      </div>
+    </div>
+
+    <div class="modal" id="admin-modal">
+      <div class="modal-overlay" onclick="closeAdminModal()"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Админ-панель</div>
+          <button class="modal-close" onclick="closeAdminModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div id="admin-login-block" class="admin-panel">
+            <div class="mini-form">
+              <input id="admin-login-input" type="password" placeholder="Мастер-код" maxlength="32" />
+              <button class="btn primary" id="admin-login-btn">Войти в админку</button>
+            </div>
+          </div>
+
+          <div id="admin-panel-block" style="display:none;" class="admin-panel">
+            <div class="settings-card" style="margin-bottom:0; padding:14px;">
+              <div class="settings-title">Доступ</div>
+              <div class="row">
+                <div class="row-left">
+                  <div class="row-text">
+                    <div class="row-label">Статус приложения</div>
+                    <div class="row-sub" id="access-mode-label">Закрыт</div>
+                  </div>
+                </div>
+                <div class="switch" id="access-toggle" role="switch" aria-checked="false">
+                  <div class="knob"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-card" style="margin-bottom:0; padding:14px;">
+              <div class="settings-title">Генерация кодов</div>
+              <div class="settings-actions">
+                <button class="btn primary" id="generate-codes-btn">Сгенерировать 15 кодов</button>
+                <button class="btn" id="reset-codes-btn">Сбросить коды</button>
+              </div>
+              <div id="code-list" class="code-list"></div>
+            </div>
+
+            <div class="settings-card" style="margin-bottom:0; padding:14px;">
+              <div class="settings-title">Добавить событие</div>
+              <div class="mini-form">
+                <select id="admin-region-select"></select>
+                <input id="admin-event-text" type="text" placeholder="Текст события" />
+                <select id="admin-event-status">
+                  <option value="DANGER">Опасность</option>
+                  <option value="SUCCESS">Отбой</option>
+                </select>
+                <button class="btn primary" id="admin-add-event-btn">Добавить событие</button>
+              </div>
+            </div>
+
+            <div class="settings-card" style="margin-bottom:0; padding:14px;">
+              <div class="settings-title">Список событий</div>
+              <div id="admin-events-list" class="code-list"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -406,7 +1038,7 @@
         <div>Чат</div>
       </button>
 
-      <button class="nav-item" id="tab-events" onclick="alert('Раздел событий пуст')">
+      <button class="nav-item" id="tab-events" onclick="showScreen('events')">
         <div class="nav-icon">
           <span id="tab-events-emoji">🔔</span>
           <img id="tab-events-png" alt="" style="width:30px;height:30px;display:none;" />
@@ -426,9 +1058,11 @@
   </div>
 
   <script src="db.js"></script>
+  <script src="pw.js"></script>
 
 <script>
   const DATA_URL = 'https://raw.githubusercontent.com/ChirkovU/radar-data/main/status.json';
+  const TELEGRAM_CHANNEL_URL = 'https://t.me/radar_fullrussia';
 
   // ---------- PNG fallback ----------
   function maybeSwapPng({ pngUrl, pngElId, fallbackElId }) {
@@ -471,21 +1105,30 @@
     await maybeSwapPng({ pngUrl: 'images/tab-map.png', pngElId: 'tab-map-png', fallbackElId: 'tab-map-emoji' });
     await maybeSwapPng({ pngUrl: 'images/tab-chat.png', pngElId: 'tab-chat-png', fallbackElId: 'tab-chat-emoji' });
     await maybeSwapPng({ pngUrl: 'images/tab-events.png', pngElId: 'tab-events-png', fallbackElId: 'tab-events-emoji' });
+    await maybeSwapPng({ pngUrl: 'images/tab-events.png', pngElId: 'events-logo-png', fallbackElId: 'events-logo-fallback' });
     await maybeSwapPng({ pngUrl: 'images/tab-settings.png', pngElId: 'tab-settings-png', fallbackElId: 'tab-settings-emoji' });
   }
 
   // ---------- Screens ----------
   function showScreen(name) {
     const mapScreen = document.getElementById('screen-map');
+    const eventsScreen = document.getElementById('screen-events');
     const settingsScreen = document.getElementById('screen-settings');
     const tabMap = document.getElementById('tab-map');
+    const tabEvents = document.getElementById('tab-events');
     const tabSettings = document.getElementById('tab-settings');
 
     const isMap = name === 'map';
+    const isEvents = name === 'events';
+    const isSettings = name === 'settings';
+
     mapScreen.classList.toggle('active', isMap);
-    settingsScreen.classList.toggle('active', !isMap);
+    eventsScreen.classList.toggle('active', isEvents);
+    settingsScreen.classList.toggle('active', isSettings);
+
     tabMap.classList.toggle('active', isMap);
-    tabSettings.classList.toggle('active', !isMap);
+    tabEvents.classList.toggle('active', isEvents);
+    tabSettings.classList.toggle('active', isSettings);
   }
 
   // ---------- Settings state (localStorage) ----------
@@ -508,16 +1151,31 @@
   }
 
   // Первый вопрос при запуске
-  function askEnableNotificationsFirstRun() {
+  async function askEnableNotificationsFirstRun() {
     try {
       const asked = localStorage.getItem(LS_NOTIF_ASKED);
       if (asked === '1') return;
 
-      const enabled = window.confirm('Включить уведомления?');
-      localStorage.setItem(LS_NOTIF_ENABLED, enabled ? '1' : '0');
+      const enabled = window.confirm('Включить уведомления БПЛА?');
+      
+      if (enabled) {
+        // Запросить разрешение браузера
+        const granted = await requestNotificationPermission();
+        if (granted) {
+          localStorage.setItem(LS_NOTIF_ENABLED, '1');
+        } else {
+          localStorage.setItem(LS_NOTIF_ENABLED, '0');
+          console.log('Разрешение на уведомления отклонено');
+        }
+      } else {
+        localStorage.setItem(LS_NOTIF_ENABLED, '0');
+      }
+      
       localStorage.setItem(LS_NOTIF_ASKED, '1');
 
-    } catch (e) {}
+    } catch (e) {
+      console.error('Ошибка при запросе уведомлений:', e);
+    }
   }
 
   // UI sync
@@ -555,21 +1213,170 @@
     select.innerHTML = '';
     const keys = Object.keys(RADAR_DB.regions);
 
+    // Создаем уникальный список регионов по fullName (дедупликация)
+    const uniqueRegions = {};
+    for (const k of keys) {
+      const r = RADAR_DB.regions[k];
+      if (r && r.fullName) {
+        // Берем первый ключ для каждого уникального региона
+        if (!uniqueRegions[r.fullName]) {
+          uniqueRegions[r.fullName] = k;
+        }
+      }
+    }
+
     const opt0 = document.createElement('option');
     opt0.value = '';
     opt0.textContent = 'Все регионы (уведомления не фильтруются)';
     select.appendChild(opt0);
 
-    for (const k of keys) {
-      const r = RADAR_DB.regions[k];
+    // Сортируем по названию для удобства
+    const sortedRegionNames = Object.keys(uniqueRegions).sort();
+    for (const fullName of sortedRegionNames) {
+      const k = uniqueRegions[fullName];
       const opt = document.createElement('option');
       opt.value = k;
-      opt.textContent = r.fullName;
+      opt.textContent = fullName;
       select.appendChild(opt);
     }
   }
 
-  // ---------- Notification behavior (UI-only now) ----------
+  // ---------- Web Push Notifications API ----------
+  // Проверка поддержки Notifications API
+  function notificationsSupported() {
+    return 'Notification' in window && 'serviceWorker' in navigator;
+  }
+
+  // Запрос разрешения на отправку уведомлений
+  async function requestNotificationPermission() {
+    if (!notificationsSupported()) {
+      console.log('Notifications API не поддерживается');
+      return false;
+    }
+
+    if (Notification.permission === 'granted') {
+      return true;
+    }
+
+    if (Notification.permission !== 'denied') {
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    }
+
+    return false;
+  }
+
+  // Отправка системного уведомления (для всех платформ, включая Android)
+  async function sendNotification(title, options = {}) {
+    if (!notificationsSupported()) {
+      console.log('Notifications API не поддерживается');
+      return false;
+    }
+
+    if (Notification.permission !== 'granted') {
+      const granted = await requestNotificationPermission();
+      if (!granted) return false;
+    }
+
+    try {
+      // Если Service Worker зарегистрирован, используем его
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        if (registration && typeof registration.showNotification === 'function') {
+          await registration.showNotification(title, {
+            ...options,
+            icon: options.icon || 'images/logo.png',
+            badge: options.badge || 'images/icon-target.png',
+            requireInteraction: true
+          });
+          return true;
+        }
+      }
+
+      // Fallback: обычное уведомление (работает везде)
+      new Notification(title, {
+        ...options,
+        icon: options.icon || 'images/logo.png',
+        requireInteraction: true
+      });
+      return true;
+    } catch (error) {
+      console.error('Ошибка при отправке уведомления:', error);
+      return false;
+    }
+  }
+
+  // Регистрация Service Worker для фоновых уведомлений
+  async function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) {
+      console.log('Service Worker не поддерживается');
+      return;
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.register('service-worker.js', {
+        scope: '/'
+      });
+      console.log('Service Worker зарегистрирован:', registration);
+      return registration;
+    } catch (error) {
+      console.error('Ошибка при регистрации Service Worker:', error);
+      return null;
+    }
+  }
+
+  // ---------- Network / Ping status ----------
+  function getPingColor(ms) {
+    if (!Number.isFinite(ms)) return '#a0aec0';
+    if (ms <= 150) return '#38a169';
+    if (ms <= 300) return '#f59e0b';
+    return '#e53e3e';
+  }
+
+  function applyPingStatus(ms) {
+    const statusEl = document.getElementById('net-status');
+    if (!statusEl) return;
+
+    if (!Number.isFinite(ms)) {
+      statusEl.textContent = 'Нет данных';
+      statusEl.style.color = '#a0aec0';
+      return;
+    }
+
+    statusEl.textContent = `${Math.round(ms)} мс`;
+    statusEl.style.color = getPingColor(ms);
+  }
+
+  async function testPing() {
+    const start = performance.now();
+    const pingUrl = DATA_URL + '?ping=' + Date.now();
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch(pingUrl, {
+        cache: 'no-store',
+        signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const latency = performance.now() - start;
+      applyPingStatus(latency);
+      return latency;
+    } catch (error) {
+      console.warn('Проверка пинга не удалась:', error);
+      applyPingStatus(null);
+      return null;
+    }
+  }
+
+  // ---------- Notification behavior (с поддержкой Android Push Notifications) ----------
   function testNotification() {
     const enabled = getNotifEnabled();
     const regionKey = document.getElementById('region-select')?.value || '';
@@ -579,11 +1386,25 @@
       return;
     }
 
+    let regionName = 'Все регионы';
+    let notificationBody = 'Тестовое уведомление для всех регионов';
+    
     if (regionKey && RADAR_DB?.regions?.[regionKey]) {
-      alert('Тест уведомления: ' + RADAR_DB.regions[regionKey].fullName);
-    } else {
-      alert('Тест уведомления: Все регионы');
+      regionName = RADAR_DB.regions[regionKey].fullName;
+      notificationBody = `Тестовое уведомление для ${regionName}`;
     }
+
+    // Отправляем системное уведомление
+    sendNotification('🎯 РАДАР - Тест', {
+      body: notificationBody,
+      tag: 'test-notification'
+    }).then(success => {
+      if (success) {
+        alert('✅ Уведомление отправлено для: ' + regionName);
+      } else {
+        alert('❌ Не удалось отправить уведомление. Проверьте разрешения.');
+      }
+    });
   }
 
   // ---------- Init Settings events ----------
@@ -592,10 +1413,24 @@
     const btnSave = document.getElementById('settings-save-btn');
     const btnTest = document.getElementById('test-notif-btn');
     const btnAbout = document.getElementById('about-btn');
+    const btnPing = document.getElementById('ping-test-btn');
+    const adminBtn = document.getElementById('admin-open-btn');
 
     if (sw) {
-      sw.addEventListener('click', () => {
-        setNotifEnabled(!getNotifEnabled());
+      sw.addEventListener('click', async () => {
+        const currentState = getNotifEnabled();
+        const newState = !currentState;
+        
+        if (newState) {
+          // Запросить разрешение на уведомления
+          const granted = await requestNotificationPermission();
+          if (!granted) {
+            alert('Уведомления требуют разрешения в браузере. Проверьте настройки.');
+            return;
+          }
+        }
+        
+        setNotifEnabled(newState);
         updateNotifSwitchUi();
       });
     }
@@ -615,17 +1450,901 @@
       btnTest.addEventListener('click', () => testNotification());
     }
 
+    if (btnPing) {
+      btnPing.addEventListener('click', () => {
+        btnPing.disabled = true;
+        btnPing.textContent = 'Проверяю...';
+        testPing().finally(() => {
+          btnPing.disabled = false;
+          btnPing.textContent = 'Проверить пинг';
+        });
+      });
+    }
+
     if (btnAbout) {
       btnAbout.addEventListener('click', () => {
-        alert('Опасность БПЛА\n\nВерсия: v0.6.5\nСтатус сети: Стабильно');
+        const currentPing = document.getElementById('net-status')?.textContent || '—';
+        alert('Опасность БПЛА\n\nВерсия: v0.6.5\nЗадержка сети: ' + currentPing);
+      });
+    }
+
+    if (adminBtn) {
+      adminBtn.addEventListener('click', () => {
+        openAdminModal();
       });
     }
   }
+
+  const MASTER_ADMIN_CODE = 'Etti-1212';
+  const BETA_CODES_KEY = 'radar_beta_codes';
+  const APP_ACCESS_MODE_KEY = 'radar_app_access_mode';
+  const APP_UNLOCKED_KEY = 'radar_app_unlocked';
+  const DEVICE_ID_KEY = 'radar_device_id';
+  const ADMIN_SESSION_KEY = 'radar_admin_session';
+  const ADMIN_TRIES_KEY = 'radar_admin_tries';
+  const MANUAL_EVENTS_KEY = 'radar_manual_events';
+  const APP_STATE_URL = 'status.json';
+  const BETA_CODES_URL = 'pw.js';
+
+  function readRemoteJson(url, fallbackValue) {
+    return fetch(url, { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const text = await response.text();
+        if (!text) return fallbackValue;
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          const cleaned = text.replace(/^window\.[A-Za-z0-9_]+\s*=\s*/, '').trim();
+          return JSON.parse(cleaned || 'null') || fallbackValue;
+        }
+      })
+      .catch(() => fallbackValue);
+  }
+
+  function writeRemoteJson(url, payload) {
+    try {
+      return fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload, null, 2)
+      }).catch(() => true);
+    } catch (e) {
+      return Promise.resolve(true);
+    }
+  }
+
+  function normalizeCode(code) {
+    return String(code || '').trim().toUpperCase();
+  }
+
+  function getDeviceId() {
+    try {
+      let value = localStorage.getItem(DEVICE_ID_KEY);
+      if (!value) {
+        value = 'DEV-' + Math.random().toString(36).slice(2, 10) + '-' + Date.now().toString(36);
+        localStorage.setItem(DEVICE_ID_KEY, value);
+      }
+      return value;
+    } catch (e) {
+      return 'anonymous-device';
+    }
+  }
+
+  function getAccessMode() {
+    try {
+      const localValue = localStorage.getItem(APP_ACCESS_MODE_KEY);
+      if (localValue) return localValue;
+    } catch (e) {}
+
+    return 'closed';
+  }
+
+  async function loadRemoteAccessMode() {
+    const state = await readRemoteJson(APP_STATE_URL, { accessMode: 'closed', events: [], feed: [] });
+    if (!state || typeof state !== 'object') {
+      return 'closed';
+    }
+
+    const remoteMode = state.accessMode === 'open' ? 'open' : 'closed';
+    try {
+      localStorage.setItem(APP_ACCESS_MODE_KEY, remoteMode);
+    } catch (e) {}
+    return remoteMode;
+  }
+
+  async function getRemoteAccessState() {
+    const state = await readRemoteJson(APP_STATE_URL, { accessMode: 'closed', events: [], feed: [] });
+    if (state && typeof state === 'object') {
+      return {
+        accessMode: state.accessMode === 'open' ? 'open' : 'closed',
+        events: Array.isArray(state.events) ? state.events : [],
+        feed: Array.isArray(state.feed) ? state.feed : []
+      };
+    }
+    return { accessMode: 'closed', events: [], feed: [] };
+  }
+
+  function setAccessMode(mode) {
+    const nextMode = mode === 'open' ? 'open' : 'closed';
+    try {
+      localStorage.setItem(APP_ACCESS_MODE_KEY, nextMode);
+    } catch (e) {}
+
+    getRemoteAccessState().then((state) => {
+      const nextState = {
+        ...state,
+        accessMode: nextMode,
+        updatedAt: new Date().toISOString()
+      };
+      writeRemoteJson(APP_STATE_URL, nextState);
+    });
+  }
+
+  function getBetaCodes() {
+    try {
+      const localValue = localStorage.getItem(BETA_CODES_KEY);
+      if (localValue) {
+        const parsed = JSON.parse(localValue);
+        if (Array.isArray(parsed) && parsed.length) return parsed;
+      }
+    } catch (e) {}
+
+    if (window.ADMIN_BETA_CODES && Array.isArray(window.ADMIN_BETA_CODES)) {
+      return window.ADMIN_BETA_CODES;
+    }
+
+    return [];
+  }
+
+  function saveBetaCodes(codes) {
+    try {
+      localStorage.setItem(BETA_CODES_KEY, JSON.stringify(codes));
+    } catch (e) {}
+
+    if (window && typeof window !== 'undefined') {
+      window.ADMIN_BETA_CODES = codes;
+    }
+
+    const payload = Array.isArray(codes) ? codes : [];
+    const content = 'window.ADMIN_BETA_CODES = ' + JSON.stringify(payload, null, 2) + ';\n';
+    try {
+      fetch(BETA_CODES_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/javascript' },
+        body: content
+      }).catch(() => true);
+    } catch (e) {}
+  }
+
+  function generateBetaCodes() {
+    const existing = getBetaCodes();
+    const generated = [];
+    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+    for (let i = 0; i < 15; i++) {
+      let code = '';
+      for (let j = 0; j < 6; j++) {
+        code += alphabet[Math.floor(Math.random() * alphabet.length)];
+      }
+      const candidate = `RAD-${code}`;
+      const alreadyExists = existing.some(item => normalizeCode(item.code) === normalizeCode(candidate));
+      if (!alreadyExists) {
+        generated.push({
+          code: candidate,
+          active: true,
+          used: false,
+          usedByDevice: '',
+          createdAt: Date.now()
+        });
+      }
+    }
+
+    const finalCodes = [...existing, ...generated];
+    saveBetaCodes(finalCodes.slice(0, 30));
+    renderAdminCodes();
+    return finalCodes.slice(0, 30);
+  }
+
+  function resetBetaCodes() {
+    saveBetaCodes([]);
+    renderAdminCodes();
+  }
+
+  function renderAdminCodes() {
+    const list = document.getElementById('code-list');
+    if (!list) return;
+
+    const codes = getBetaCodes();
+    if (!codes.length) {
+      list.innerHTML = '<div class="code-item"><span>Коды ещё не сгенерированы</span></div>';
+      return;
+    }
+
+    list.innerHTML = '';
+    for (const item of codes) {
+      const row = document.createElement('div');
+      row.className = 'code-item';
+      row.innerHTML = `
+        <span>${item.code}</span>
+        <span class="tag ${item.used ? 'used' : 'active'}">${item.used ? 'Использован' : 'Активен'}</span>
+      `;
+      list.appendChild(row);
+    }
+  }
+
+  function getManualEvents() {
+    try {
+      const localValue = JSON.parse(localStorage.getItem(MANUAL_EVENTS_KEY) || '[]');
+      if (Array.isArray(localValue)) return localValue;
+    } catch (e) {}
+
+    return [];
+  }
+
+  function saveManualEvents(events) {
+    try {
+      localStorage.setItem(MANUAL_EVENTS_KEY, JSON.stringify(events));
+    } catch (e) {}
+
+    getRemoteAccessState().then((state) => {
+      const nextState = {
+        ...state,
+        events: Array.isArray(events) ? events : [],
+        updatedAt: new Date().toISOString()
+      };
+      writeRemoteJson(APP_STATE_URL, nextState);
+    });
+  }
+
+  function renderAdminEvents() {
+    const list = document.getElementById('admin-events-list');
+    if (!list) return;
+
+    const events = getManualEvents();
+    if (!events.length) {
+      list.innerHTML = '<div class="code-item"><span>Нет пользовательских событий</span></div>';
+      return;
+    }
+
+    list.innerHTML = '';
+    for (const event of events) {
+      const row = document.createElement('div');
+      row.className = 'code-item';
+      row.style.alignItems = 'flex-start';
+      row.style.flexDirection = 'column';
+      row.innerHTML = `
+        <div style="display:flex; justify-content:space-between; width:100%; gap:8px;">
+          <strong>${event.regionName || 'Регион'}</strong>
+          <button data-event-id="${event.id}" class="btn" style="padding:6px 8px; margin-top:0; font-size:10px; width:auto;">Удалить</button>
+        </div>
+        <span>${event.text}</span>
+        <span class="tag ${event.status === 'DANGER' ? 'active' : 'used'}">${event.status === 'DANGER' ? 'Опасность' : 'Отбой'}</span>
+      `;
+
+      const deleteBtn = row.querySelector('button');
+      deleteBtn.addEventListener('click', () => {
+        removeManualEvent(event.id);
+      });
+
+      list.appendChild(row);
+    }
+  }
+
+  function removeManualEvent(id) {
+    const updated = getManualEvents().filter(item => String(item.id) !== String(id));
+    saveManualEvents(updated);
+    refreshThreatsHistoryFromManual();
+    renderAdminEvents();
+    renderEventsSummary();
+  }
+
+  function refreshThreatsHistoryFromManual() {
+    const manual = getManualEvents();
+    const filtered = threatsHistory.filter(item => !item.isManual);
+    threatsHistory = [...filtered, ...manual.map(item => ({
+      ...item,
+      regionKey: item.regionKey || item.regionName,
+     Status: item.status,
+      isManual: true
+    }))];
+  }
+
+  function addManualEvent(regionKey, regionName, text, status) {
+    const events = getManualEvents();
+    const next = {
+      id: Date.now() + Math.random().toString(36).slice(2, 8),
+      regionKey,
+      regionName,
+      text,
+      status,
+      timestamp: Date.now(),
+      isManual: true
+    };
+    events.unshift(next);
+    saveManualEvents(events);
+    refreshThreatsHistoryFromManual();
+    renderAdminEvents();
+    renderEventsSummary();
+    return next;
+  }
+
+  function isAccessOpen() {
+    return getAccessMode() === 'open' || localStorage.getItem(APP_UNLOCKED_KEY) === '1';
+  }
+
+  function setAccessUnlocked(value) {
+    try {
+      localStorage.setItem(APP_UNLOCKED_KEY, value ? '1' : '0');
+    } catch (e) {}
+  }
+
+  function setAdminSession(value) {
+    try {
+      localStorage.setItem(ADMIN_SESSION_KEY, value ? '1' : '0');
+    } catch (e) {}
+  }
+
+  function hasAdminSession() {
+    return localStorage.getItem(ADMIN_SESSION_KEY) === '1';
+  }
+
+  function getAdminTryCount() {
+    try {
+      return Number(localStorage.getItem(ADMIN_TRIES_KEY) || '0');
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function setAdminTryCount(value) {
+    try {
+      localStorage.setItem(ADMIN_TRIES_KEY, String(value));
+    } catch (e) {}
+  }
+
+  function isCodeValid(code) {
+    const normalized = normalizeCode(code);
+    if (!normalized) return false;
+
+    if (normalized === normalizeCode(MASTER_ADMIN_CODE)) {
+      return { valid: true, admin: true };
+    }
+
+    const deviceId = getDeviceId();
+    const codes = getBetaCodes();
+    const candidate = codes.find(item => normalizeCode(item.code) === normalized && item.active && !item.used);
+
+    if (!candidate) {
+      return { valid: false, admin: false, reason: 'Код не найден или уже использован' };
+    }
+
+    const alreadyUsedOnThisDevice = candidate.usedByDevice && candidate.usedByDevice === deviceId;
+    if (alreadyUsedOnThisDevice) {
+      return { valid: false, admin: false, reason: 'Код уже активирован на этом устройстве' };
+    }
+
+    candidate.active = false;
+    candidate.used = true;
+    candidate.usedByDevice = deviceId;
+    candidate.usedAt = Date.now();
+    saveBetaCodes(codes);
+    renderAdminCodes();
+    return { valid: true, admin: false, reason: 'Beta access granted' };
+  }
+
+  function applyAccessGrant() {
+    setAccessUnlocked(true);
+    const lock = document.getElementById('access-lock');
+    if (lock) lock.classList.remove('active');
+  }
+
+  function unlockAppWithCode(code) {
+    const result = isCodeValid(code);
+    if (!result.valid) {
+      const status = document.getElementById('access-status');
+      if (status) {
+        status.textContent = result.reason || 'Не удалось выполнить вход';
+        status.classList.add('error');
+        status.classList.remove('success');
+      }
+      return false;
+    }
+
+    if (result.admin) {
+      setAdminSession(true);
+      openAdminModal();
+    }
+
+    applyAccessGrant();
+    const status = document.getElementById('access-status');
+    if (status) {
+      status.textContent = result.admin ? 'Админ-доступ активирован' : 'Доступ по beta-коду активирован';
+      status.classList.add('success');
+      status.classList.remove('error');
+    }
+    return true;
+  }
+
+  function checkAccessGate() {
+    const lock = document.getElementById('access-lock');
+    const accessMode = getAccessMode();
+    const unlocked = isAccessOpen();
+
+    if (lock) {
+      if (accessMode === 'closed' && !unlocked) {
+        lock.classList.add('active');
+        return false;
+      }
+      lock.classList.remove('active');
+    }
+
+    return true;
+  }
+
+  function openAdminModal() {
+    const modal = document.getElementById('admin-modal');
+    const loginBlock = document.getElementById('admin-login-block');
+    const panelBlock = document.getElementById('admin-panel-block');
+    if (!modal) return;
+
+    if (hasAdminSession()) {
+      loginBlock.style.display = 'none';
+      panelBlock.style.display = 'block';
+    } else {
+      loginBlock.style.display = 'block';
+      panelBlock.style.display = 'none';
+    }
+
+    modal.classList.add('active');
+    renderAdminCodes();
+    renderAdminEvents();
+    renderAdminAccessToggle();
+    populateAdminRegionSelect();
+  }
+
+  function closeAdminModal() {
+    const modal = document.getElementById('admin-modal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  function renderAdminAccessToggle() {
+    const toggle = document.getElementById('access-toggle');
+    const label = document.getElementById('access-mode-label');
+    if (!toggle || !label) return;
+
+    const isOpen = getAccessMode() === 'open';
+    toggle.classList.toggle('on', isOpen);
+    toggle.setAttribute('aria-checked', isOpen ? 'true' : 'false');
+    label.textContent = isOpen ? 'Открыт' : 'Закрыт';
+  }
+
+  function populateAdminRegionSelect() {
+    const select = document.getElementById('admin-region-select');
+    if (!select) return;
+
+    if (!window.RADAR_DB || !RADAR_DB.regions) return;
+
+    const keys = Object.keys(RADAR_DB.regions).sort();
+    select.innerHTML = '';
+    for (const key of keys) {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = RADAR_DB.regions[key].fullName;
+      select.appendChild(option);
+    }
+  }
+
+  function adminTryLogin() {
+    const input = document.getElementById('admin-login-input');
+    const code = input ? input.value : '';
+    if (normalizeCode(code) === normalizeCode(MASTER_ADMIN_CODE)) {
+      setAdminSession(true);
+      openAdminModal();
+      setAdminTryCount(0);
+      return;
+    }
+
+    const tries = getAdminTryCount() + 1;
+    setAdminTryCount(tries);
+    if (tries >= 5) {
+      alert('Слишком много попыток. Подождите 5 минут.');
+      return;
+    }
+
+    alert('Неверный мастер-код');
+  }
+
+  function adminLogout() {
+    setAdminSession(false);
+    closeAdminModal();
+    setAccessUnlocked(false);
+    const lock = document.getElementById('access-lock');
+    if (lock) lock.classList.add('active');
+  }
+
+  function initAdminControls() {
+    const loginBtn = document.getElementById('admin-login-btn');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', adminTryLogin);
+    }
+
+    const accessBtn = document.getElementById('access-enter-btn');
+    if (accessBtn) {
+      accessBtn.addEventListener('click', () => {
+        const input = document.getElementById('access-code-input');
+        if (input) unlockAppWithCode(input.value);
+      });
+    }
+
+    const adminAccessBtn = document.getElementById('access-admin-btn');
+    if (adminAccessBtn) {
+      adminAccessBtn.addEventListener('click', () => {
+        openAdminModal();
+      });
+    }
+
+    const generateBtn = document.getElementById('generate-codes-btn');
+    if (generateBtn) {
+      generateBtn.addEventListener('click', () => {
+        generateBetaCodes();
+        alert('Сгенерировано 15 beta-кодов');
+      });
+    }
+
+    const resetBtn = document.getElementById('reset-codes-btn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        resetBetaCodes();
+        alert('Коды сброшены');
+      });
+    }
+
+    const accessToggle = document.getElementById('access-toggle');
+    if (accessToggle) {
+      accessToggle.addEventListener('click', () => {
+        const next = getAccessMode() === 'open' ? 'closed' : 'open';
+        setAccessMode(next);
+        renderAdminAccessToggle();
+        if (next === 'closed') {
+          setAccessUnlocked(false);
+          const lock = document.getElementById('access-lock');
+          if (lock) lock.classList.add('active');
+        } else {
+          setAccessUnlocked(true);
+          const lock = document.getElementById('access-lock');
+          if (lock) lock.classList.remove('active');
+        }
+      });
+    }
+
+    const addEventBtn = document.getElementById('admin-add-event-btn');
+    if (addEventBtn) {
+      addEventBtn.addEventListener('click', () => {
+        const regionSelect = document.getElementById('admin-region-select');
+        const textInput = document.getElementById('admin-event-text');
+        const statusSelect = document.getElementById('admin-event-status');
+        const key = regionSelect ? regionSelect.value : '';
+        const text = textInput ? textInput.value.trim() : '';
+        const status = statusSelect ? statusSelect.value : 'DANGER';
+
+        if (!key || !text) {
+          alert('Заполните регион и текст события');
+          return;
+        }
+
+        const regionName = window.RADAR_DB && RADAR_DB.regions[key] ? RADAR_DB.regions[key].fullName : key;
+        addManualEvent(key, regionName, text, status);
+        alert('Событие добавлено');
+        if (textInput) textInput.value = '';
+      });
+    }
+
+    const openAdminBtn = document.getElementById('admin-open-btn');
+    if (openAdminBtn) {
+      openAdminBtn.addEventListener('click', () => openAdminModal());
+    }
+
+    window.closeAdminModal = closeAdminModal;
+    window.openAdminModal = openAdminModal;
+  }
+
+  async function ensureInitialAccessState() {
+    const remoteMode = await loadRemoteAccessMode();
+    const mode = remoteMode || getAccessMode();
+    if (!mode) setAccessMode('closed');
+    const unlocked = localStorage.getItem(APP_UNLOCKED_KEY) === '1';
+    if (mode === 'open' || unlocked) {
+      setAccessUnlocked(true);
+    } else {
+      setAccessUnlocked(false);
+    }
+    renderAdminAccessToggle();
+    checkAccessGate();
+  }
+
+  function hydrateManualThreatsOnStartup() {
+    const manualEvents = getManualEvents();
+    if (!manualEvents.length) return;
+    const existingManualIds = new Set(threatsHistory.filter(item => item.isManual).map(item => item.id));
+    for (const item of manualEvents) {
+      if (!existingManualIds.has(item.id)) {
+        threatsHistory.push({ ...item, isManual: true });
+      }
+    }
+  }
+
+  // ---------- Threats Modal Logic ----------
+  function openThreatsModal() {
+    const modal = document.getElementById('threats-modal');
+    const container = document.getElementById('threats-list-container');
+    
+    if (!modal || !container) return;
+
+    // Фильтруем угрозы за последние 24 часа
+    const now = Date.now();
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    const last24hThreats = threatsHistory.filter(threat => {
+      return (now - threat.timestamp) <= oneDayMs;
+    });
+
+    container.innerHTML = '';
+
+    if (last24hThreats.length === 0) {
+      container.innerHTML = '<div class="threats-empty">Угроз за последние 24 часа не обнаружено</div>';
+    } else {
+      // Сортируем по времени (новые в начале)
+      last24hThreats.sort((a, b) => b.timestamp - a.timestamp);
+
+      for (const threat of last24hThreats) {
+        const threatEl = document.createElement('div');
+        threatEl.className = `threat-item ${threat.status.toLowerCase()}`;
+
+        const threatTime = new Date(threat.timestamp);
+        const timeStr = threatTime.toLocaleTimeString('ru-RU', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          second: '2-digit'
+        });
+        const dateStr = threatTime.toLocaleDateString('ru-RU', {
+          month: 'short',
+          day: 'numeric'
+        });
+
+        const statusText = threat.status === 'DANGER' ? 'Опасность' : 'Отбой';
+        
+        threatEl.innerHTML = `
+          <div class="threat-header">
+            <div class="threat-region">${threat.regionName}</div>
+            <div class="threat-time">${dateStr}<br>${timeStr}</div>
+          </div>
+          <div class="threat-text">${threat.text}</div>
+          <div class="threat-status-badge ${threat.status.toLowerCase()}">${statusText}</div>
+        `;
+
+        container.appendChild(threatEl);
+      }
+    }
+
+    modal.classList.add('active');
+  }
+
+  function closeThreatsModal() {
+    const modal = document.getElementById('threats-modal');
+    if (modal) {
+      modal.classList.remove('active');
+    }
+  }
+
+  function renderEventChart() {
+    const chartEl = document.getElementById('events-chart');
+    const chartLabelEl = document.getElementById('events-chart-label');
+    if (!chartEl) return;
+
+    const now = new Date();
+    const buckets = [];
+    const maxHours = 12;
+
+    for (let i = maxHours - 1; i >= 0; i--) {
+      const date = new Date(now);
+      date.setMinutes(0, 0, 0);
+      date.setHours(now.getHours() - i, 0, 0, 0);
+      const hourKey = date.getHours();
+      const count = threatsHistory.filter(event => {
+        const eventDate = new Date(event.timestamp);
+        return eventDate.getFullYear() === date.getFullYear()
+          && eventDate.getMonth() === date.getMonth()
+          && eventDate.getDate() === date.getDate()
+          && eventDate.getHours() === hourKey;
+      }).length;
+
+      buckets.push({
+        label: `${date.getHours()}:00`,
+        value: count,
+        date
+      });
+    }
+
+    const maxValue = Math.max(1, ...buckets.map(item => item.value));
+    const peak = buckets.reduce((best, item) => item.value > best.value ? item : best, { value: 0, label: '—' });
+
+    if (chartLabelEl) {
+      chartLabelEl.textContent = peak.value > 0 ? `пик ${peak.label}` : 'пик —';
+    }
+
+    chartEl.innerHTML = '';
+
+    for (const item of buckets) {
+      const wrap = document.createElement('div');
+      wrap.className = 'event-bar-wrap';
+
+      const bar = document.createElement('div');
+      const heightPercent = item.value === 0 ? 10 : Math.max(14, (item.value / maxValue) * 100);
+      bar.className = `event-bar${item.value === 0 ? ' empty' : ''}`;
+      bar.style.height = `${heightPercent}%`;
+      bar.title = `${item.label}: ${item.value} событий`;
+
+      const label = document.createElement('div');
+      label.className = 'event-bar-label';
+      label.textContent = item.label.split(':')[0];
+
+      wrap.appendChild(bar);
+      wrap.appendChild(label);
+      chartEl.appendChild(wrap);
+    }
+  }
+
+  function renderRegionActivity() {
+    const container = document.getElementById('events-region-list');
+    if (!container) return;
+
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    const recentEvents = threatsHistory.filter(event => Date.now() - event.timestamp <= oneDayMs);
+    const regionCounts = {};
+
+    for (const event of recentEvents) {
+      const region = event.regionName || 'Неизвестно';
+      regionCounts[region] = (regionCounts[region] || 0) + 1;
+    }
+
+    const items = Object.entries(regionCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4);
+
+    container.innerHTML = '';
+
+    if (items.length === 0) {
+      container.innerHTML = '<div class="threats-empty" style="padding: 12px 8px; font-size: 12px;">Нет активности за сутки</div>';
+      return;
+    }
+
+    const maxValue = Math.max(...items.map(([, count]) => count), 1);
+
+    for (const [region, count] of items) {
+      const row = document.createElement('div');
+      row.className = 'region-row';
+
+      const header = document.createElement('div');
+      header.className = 'region-row-header';
+      header.innerHTML = `<span>${region}</span><strong>${count}</strong>`;
+
+      const meter = document.createElement('div');
+      meter.className = 'region-meter';
+
+      const fill = document.createElement('div');
+      fill.className = 'region-meter-fill';
+      fill.style.width = `${Math.max(15, (count / maxValue) * 100)}%`;
+
+      meter.appendChild(fill);
+      row.appendChild(header);
+      row.appendChild(meter);
+      container.appendChild(row);
+    }
+  }
+
+  function normalizeThreatText(text) {
+    return String(text || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  }
+
+  function isDuplicateThreatEvent(regionKey, status, text, eventMs) {
+    const normalizedText = normalizeThreatText(text);
+    const duplicateWindowMs = 10 * 60 * 1000;
+
+    for (let i = threatsHistory.length - 1; i >= 0; i--) {
+      const prev = threatsHistory[i];
+      if (!prev) continue;
+
+      const age = Math.abs((prev.timestamp || 0) - eventMs);
+      if (age > duplicateWindowMs) continue;
+
+      if (
+        prev.regionKey === regionKey &&
+        prev.status === status &&
+        normalizeThreatText(prev.text) === normalizedText
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function renderEventsSummary() {
+    const todayEl = document.getElementById('events-today-count');
+    const hourEl = document.getElementById('events-hour-count');
+    const topRegionEl = document.getElementById('events-top-region');
+    const anomalyEl = document.getElementById('events-anomaly');
+    const updatedEl = document.getElementById('events-last-updated');
+    const sourceEl = document.getElementById('events-source');
+
+    if (sourceEl) {
+      sourceEl.href = TELEGRAM_CHANNEL_URL;
+      sourceEl.textContent = '@radar_fullrussia';
+    }
+
+    if (!todayEl || !hourEl || !topRegionEl || !anomalyEl) return;
+
+    const now = Date.now();
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const hourStart = now - 60 * 60 * 1000;
+
+    const todayEvents = threatsHistory.filter(event => event.timestamp >= todayStart.getTime());
+    const hourEvents = threatsHistory.filter(event => event.timestamp >= hourStart);
+
+    const regionCounts = {};
+    for (const event of todayEvents) {
+      const name = event.regionName || 'Неизвестно';
+      regionCounts[name] = (regionCounts[name] || 0) + 1;
+    }
+
+    let topRegion = '—';
+    let topCount = 0;
+    for (const [name, count] of Object.entries(regionCounts)) {
+      if (count > topCount) {
+        topCount = count;
+        topRegion = name;
+      }
+    }
+
+    const avgPerHour = todayEvents.length ? todayEvents.length / 24 : 0;
+    let anomalyText = 'Норма';
+    if (hourEvents.length >= 3 && hourEvents.length > avgPerHour * 2) {
+      anomalyText = 'Рост активности в текущем часу';
+    } else if (hourEvents.length === 0) {
+      anomalyText = 'Спокойный период';
+    } else if (todayEvents.length > 0) {
+      anomalyText = 'Равномерная активность';
+    }
+
+    todayEl.textContent = `${todayEvents.length} событий`;
+    hourEl.textContent = `${hourEvents.length} событий`;
+    topRegionEl.textContent = topRegion === '—' ? '—' : `${topRegion} (${topCount})`;
+    anomalyEl.textContent = anomalyText;
+
+    if (updatedEl) {
+      updatedEl.textContent = new Date(now).toLocaleTimeString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    renderEventChart();
+    renderRegionActivity();
+  }
+
+  // Закрытие модали при нажатии Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeThreatsModal();
+    }
+  });
 
   // ---------- Map & Radar logic (как у тебя) ----------
   let map;
   let markersByRegion = {};
   let stateByRegion = {};
+  let threatsHistory = []; // История всех угроз для отображения в модали
 
   function initMap() {
     map = L.map('map', { attributionControl: false }).setView(
@@ -751,11 +2470,22 @@
 
     try {
       const response = await fetch(DATA_URL + "?t=" + nowMs);
-      if (!response.ok) throw new Error();
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const data = await response.json();
-      const historyArray = Array.isArray(data) ? data : (data ? [data] : []);
-      if (historyArray.length === 0) return;
+      console.log('Данные загружены:', data);
+      
+      const historyArray = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.feed)
+          ? data.feed
+          : Array.isArray(data?.events)
+            ? data.events
+            : (data ? [data] : []);
+      if (historyArray.length === 0) {
+        console.log('История пуста');
+        return;
+      }
 
       const latestPost = historyArray[0];
       hiddenText.innerText = extractText(latestPost) || "Нет данных";
@@ -766,6 +2496,7 @@
         : '--:--';
 
       const latestEventByRegion = {};
+      const seenThisFetch = new Set();
 
       for (const item of historyArray) {
         const text = extractText(item);
@@ -778,11 +2509,17 @@
         const status = detectStatus(text);
         if (status === 'NEUTRAL') continue;
 
+        const eventSignature = `${regionKey}|${status}|${normalizeThreatText(text)}|${Math.floor(eventMs / 60000)}`;
+        if (seenThisFetch.has(eventSignature)) continue;
+        seenThisFetch.add(eventSignature);
+
         const cur = latestEventByRegion[regionKey];
         if (!cur || eventMs > cur.eventMs) {
           latestEventByRegion[regionKey] = { status, eventMs, text };
         }
       }
+
+      console.log('Обнаружены события по регионам:', Object.keys(latestEventByRegion));
 
       const notifEnabled = getNotifEnabled();
       const notifRegionKey = getNotifRegionKey(); // '' = все
@@ -794,10 +2531,40 @@
         if (prev && typeof prev.lastEventMs === 'number' && ev.eventMs <= prev.lastEventMs) continue;
 
         if (ev.status === 'DANGER') {
+          const duplicate = isDuplicateThreatEvent(regionKey, ev.status, ev.text, ev.eventMs);
+          if (duplicate) continue;
+
           if (notifEnabled && (notifRegionKey === '' || notifRegionKey === regionKey)) {
             const wasDanger = prev?.status === 'DANGER';
-            if (!wasDanger) console.log('Уведомление (тест):', regionKey, ev.text);
+            if (!wasDanger) {
+              console.log('Уведомление ОПАСНОСТЬ:', regionKey, ev.text);
+              
+              // Отправляем системное уведомление на Android и другие платформы
+              const regionData = RADAR_DB.regions[regionKey];
+              const regionName = regionData ? regionData.fullName : regionKey;
+              
+              // Добавляем информацию о выборе региона пользователем
+              const userSelectedRegion = getNotifRegionKey();
+              const regionInfo = userSelectedRegion ? `Ваш регион: ${regionName}` : `Опасность в ${regionName}`;
+              
+              sendNotification('🚁 ОПАСНОСТЬ БПЛА', {
+                body: regionInfo + '\n' + ev.text.substring(0, 80),
+                tag: 'danger-' + regionKey,
+                requireInteraction: true
+              }).catch(err => console.log('Ошибка отправки:', err));
+            }
           }
+
+          // Добавляем в историю угроз
+          const regionData = RADAR_DB.regions[regionKey];
+          const regionName = regionData ? regionData.fullName : regionKey;
+          threatsHistory.push({
+            regionKey,
+            regionName,
+            status: 'DANGER',
+            text: ev.text,
+            timestamp: ev.eventMs
+          });
 
           stateByRegion[regionKey] = {
             status: 'DANGER',
@@ -806,6 +2573,40 @@
             lastText: ev.text
           };
         } else if (ev.status === 'SUCCESS') {
+          const duplicate = isDuplicateThreatEvent(regionKey, ev.status, ev.text, ev.eventMs);
+          if (duplicate) continue;
+
+          if (notifEnabled && (notifRegionKey === '' || notifRegionKey === regionKey)) {
+            const wasDanger = prev?.status === 'DANGER';
+            if (wasDanger) {
+              console.log('Уведомление ОТБОЙ:', regionKey, ev.text);
+              
+              // Отправляем уведомление об отбое
+              const regionData = RADAR_DB.regions[regionKey];
+              const regionName = regionData ? regionData.fullName : regionKey;
+              
+              // Добавляем информацию о выборе региона пользователем
+              const userSelectedRegion = getNotifRegionKey();
+              const regionInfo = userSelectedRegion ? `Ваш регион: ${regionName}` : `В регионе ${regionName}`;
+              
+              sendNotification('✅ ОТБОЙ', {
+                body: regionInfo + ' - опасность миновала',
+                tag: 'success-' + regionKey
+              }).catch(err => console.log('Ошибка отправки:', err));
+            }
+          }
+
+          // Добавляем в историю угроз
+          const regionData = RADAR_DB.regions[regionKey];
+          const regionName = regionData ? regionData.fullName : regionKey;
+          threatsHistory.push({
+            regionKey,
+            regionName,
+            status: 'SUCCESS',
+            text: ev.text,
+            timestamp: ev.eventMs
+          });
+
           stateByRegion[regionKey] = {
             status: 'SUCCESS',
             lastEventMs: ev.eventMs,
@@ -816,6 +2617,7 @@
       }
 
       refreshMarkersByTime(nowMs);
+      renderEventsSummary();
 
       let dangerRegionsCount = 0;
       for (const regionKey of Object.keys(stateByRegion)) {
@@ -833,30 +2635,103 @@
       }
 
     } catch (e) {
-      console.log("Сбой сети");
+      console.error("Сбой при загрузке данных:", e);
     }
   }
 
   // ---------- Start ----------
   applyPngIfExists();
 
+  // Регистрируем Service Worker для фоновых уведомлений
+  if ('serviceWorker' in navigator && notificationsSupported()) {
+    registerServiceWorker().then(registration => {
+      if (registration) {
+        console.log('Service Worker готов для push-уведомлений');
+      }
+    });
+  }
+
   // Метаданные
   document.getElementById('app-version-hint').innerText = 'v0.6.5';
   document.getElementById('core-version').innerText = 'v0.6.5';
-  document.getElementById('net-status').innerText = 'Стабильно';
+  const netStatusEl = document.getElementById('net-status');
+  if (netStatusEl) {
+    netStatusEl.textContent = '—';
+    netStatusEl.style.color = '#a0aec0';
+  }
 
-  // Настройки init
-  initRegionSelect();
-  askEnableNotificationsFirstRun();
-  updateNotifSwitchUi();
-  refreshSelectedRegionUi();
-  bindSettingsEvents();
+  function getRadarDb() {
+    return window.RADAR_DB || (typeof RADAR_DB !== 'undefined' ? RADAR_DB : null);
+  }
 
-  // Map init
-  initMap();
-  fetchRadarData();
-  setInterval(fetchRadarData, 5000);
-  setInterval(() => refreshMarkersByTime(Date.now()), 1000);
+  // Функция инициализации приложения
+  function initializeApp() {
+    const radarDb = getRadarDb();
+    console.log('Попытка инициализации приложения...');
+    console.log('RADAR_DB доступен?', !!radarDb);
+    
+    if (!radarDb) {
+      console.warn('RADAR_DB еще не загружен, повторная попытка через 200ms');
+      setTimeout(initializeApp, 200);
+      return;
+    }
+
+    console.log('RADAR_DB найден, инициализируем...');
+
+    try {
+      // Инициализируем карту
+      if (radarDb.config) {
+        console.log('Инициализируем карту...');
+        initMap();
+        console.log('Карта инициализирована');
+        
+        fetchRadarData();
+        setInterval(fetchRadarData, 5000);
+        setInterval(() => refreshMarkersByTime(Date.now()), 1000);
+      } else {
+        console.warn('RADAR_DB.config не найден');
+      }
+    } catch (e) {
+      console.error('Ошибка инициализации карты:', e);
+    }
+
+    try {
+      // Инициализируем настройки
+      if (radarDb.regions) {
+        console.log('Инициализируем настройки...');
+        initRegionSelect();
+        askEnableNotificationsFirstRun();
+        updateNotifSwitchUi();
+        refreshSelectedRegionUi();
+        bindSettingsEvents();
+        initAdminControls();
+        ensureInitialAccessState();
+        renderAdminCodes();
+        renderAdminAccessToggle();
+        populateAdminRegionSelect();
+        checkAccessGate();
+        renderEventsSummary();
+        testPing();
+
+        if (window.ADMIN_BETA_CODES && Array.isArray(window.ADMIN_BETA_CODES)) {
+          localStorage.setItem(BETA_CODES_KEY, JSON.stringify(window.ADMIN_BETA_CODES));
+        }
+        console.log('Настройки инициализированы');
+      } else {
+        console.warn('RADAR_DB.regions не найдены');
+      }
+    } catch (e) {
+      console.error('Ошибка инициализации настроек:', e);
+    }
+  }
+
+  // Запускаем инициализацию после загрузки документа или сразу если он уже загружен
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  } else {
+    // DOM уже загружен
+    setTimeout(initializeApp, 100);
+  }
 </script>
 
 </body>
