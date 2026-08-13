@@ -68,33 +68,30 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      # ИСПРАВЛЕНО: Явно скачиваем инструменты сборки версии 34.0.0
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
           packages: 'build-tools;34.0.0'
 
-      - name: Build Release APK with Gradle
+      # ИСПРАВЛЕНО: Декодируем ваш ключ прямо в файл на сервере GitHub и подписываем силами Gradle
+      - name: Build and Sign Release APK with Gradle
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          
+          # Декодируем секрет SIGNING_KEY обратно в бинарный файл ключа
+          echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > app/my-release-key.jks
+          
+          # Запускаем сборку, передавая параметры подписи напрямую в Gradle
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=my-release-key.jks \
+            -Pandroid.injected.signing.store.password="${{ secrets.KEY_STORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"
 
-      # ИСПРАВЛЕНО: Передаем BUILD_TOOLS_VERSION через переменные окружения (env) самого шага подписи
-      - name: Sign Release APK
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-          releaseDirectory: android/app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
-
+      # ИСПРАВЛЕНО: Выгружаем готовый подписанный файл, путь к которому теперь стабилен
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
           name: RADAR_FRF_v0.8.1-Release
-          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          path: android/app/build/outputs/apk/release/app-release.apk
