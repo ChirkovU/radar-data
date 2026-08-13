@@ -10,11 +10,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      # Разрешаем запуск шагов на Node 24 без блокировки сборки
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js (2026 Standard)
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -34,11 +39,11 @@ jobs:
       - name: Sync Web Code to Android
         run: npx cap sync
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21 (Required for Capacitor 7)
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
