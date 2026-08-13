@@ -40,7 +40,6 @@ jobs:
       - name: Generate Application Icons
         run: |
           mkdir -p assets
-          # Проверяем наличие иконки в любом регистре (icon.png или Icon.png)
           if [ -f "icon.png" ]; then
             cp icon.png assets/icon.png
           elif [ -f "Icon.png" ]; then
@@ -48,7 +47,6 @@ jobs:
           elif [ -f "www/icon.png" ]; then
             cp www/icon.png assets/icon.png
           fi
-          # Запускаем генерацию, если иконка найдена
           if [ -f "assets/icon.png" ]; then
             npx capacitor-assets generate --android
           else
@@ -73,14 +71,27 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build APK with Gradle
+      # Изменено: Собираем релизную версию вместо дебага
+      - name: Build Release APK with Gradle
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
+      # НОВЫЙ ШАГ: Подпись APK (без этого релизный APK не установится)
+      - name: Sign Release APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: android/app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      # Изменено: Загружаем подписанный релизный APK
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
-          name: RADAR_FRF_v0.8.1
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: RADAR_FRF_v0.8.1-Release
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
