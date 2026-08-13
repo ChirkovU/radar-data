@@ -73,17 +73,17 @@ jobs:
         with:
           packages: 'build-tools;34.0.0'
 
-      # ИСПРАВЛЕНО: Добавлена очистка строки Base64 от Windows-переносов (tr -d)
       - name: Build and Sign Release APK with Gradle
         run: |
           cd android
           chmod +x gradlew
           
-          # Удаляем пробелы, переносы строк (\n) и возвраты каретки (\r), затем декодируем
+          # Декодируем ключ в папку приложения
           echo "${{ secrets.SIGNING_KEY }}" | tr -d '\r\n ' | base64 --decode > app/my-release-key.jks
           
+          # Сборка с явным указанием полного абсолютного пути к ключу подписи
           ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=my-release-key.jks \
+            -Pandroid.injected.signing.store.file="$GITHUB_WORKSPACE/android/app/my-release-key.jks" \
             -Pandroid.injected.signing.store.password="${{ secrets.KEY_STORE_PASSWORD }}" \
             -Pandroid.injected.signing.key.alias="${{ secrets.ALIAS }}" \
             -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"
